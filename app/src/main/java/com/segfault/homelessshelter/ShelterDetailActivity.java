@@ -25,15 +25,15 @@ public class ShelterDetailActivity extends AppCompatActivity {
 
         // Set view variables
         shelterDetailLinearLayout = findViewById(R.id.shelterDetailLinearLayout);
-        uniqueKeyTextView = findViewById(R.id.shelterUniqueKeyTextView);
-        shelterNameTextView = findViewById(R.id.shelterNameTextView);
-        capacityTextView = findViewById(R.id.shelterCapacityTextView);
-        restrictionsTextView = findViewById(R.id.shelterRestrictionsTextView);
-        longitudeTextView = findViewById(R.id.shelterLongitudeTextView);
-        latitudeTextView = findViewById(R.id.shelterLatitudeTextView);
-        addressTextView = findViewById(R.id.shelterAddressTextView);
-        specialNotesTextView = findViewById(R.id.shelterSpecialNotesTextView);
-        phoneNumberTextView = findViewById(R.id.shelterPhoneNumberTextView);
+        uniqueKeyTextView = findViewById(R.id.shelterDetailUniqueKeyTextView);
+        shelterNameTextView = findViewById(R.id.shelterDetailNameTextView);
+        capacityTextView = findViewById(R.id.shelterDetailCapacityTextView);
+        restrictionsTextView = findViewById(R.id.shelterDetailRestrictionsTextView);
+        longitudeTextView = findViewById(R.id.shelterDetailLongitudeTextView);
+        latitudeTextView = findViewById(R.id.shelterDetailLatitudeTextView);
+        addressTextView = findViewById(R.id.shelterDetailAddressTextView);
+        specialNotesTextView = findViewById(R.id.shelterDetailSpecialNotesTextView);
+        phoneNumberTextView = findViewById(R.id.shelterDetailPhoneNumberTextView);
 
         // Get shelter from intent's extras
         Shelter shelter = getIntent().getExtras().getParcelable("SHELTER");

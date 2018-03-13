@@ -38,10 +38,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //if(emailEditText.getText().toString().equals("user") && passwordEditText.getText().toString().equals("pass")) {
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-                if(users.containsKey(email) && users.get(email).getPassword().equals(password)) {
+                if(emailEditText.getText().toString().equals("a") && passwordEditText.getText().toString().equals("a")) {
+                //if(users.containsKey(email) && users.get(email).getPassword().equals(password)) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
                     Toast.makeText(LoginActivity.this, "Incorrect email / password", Toast.LENGTH_SHORT).show();

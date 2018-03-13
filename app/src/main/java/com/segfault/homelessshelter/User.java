@@ -50,18 +50,4 @@ public class User {
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }
-
-    @Override
-    public boolean equals(Object object) {
-        if(object instanceof User) {
-            User user = (User) object;
-            return name.equals(user.name) && email.equals(user.email) && password.equals(user.password);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode() + email.hashCode() + password.hashCode();
-    }
 }

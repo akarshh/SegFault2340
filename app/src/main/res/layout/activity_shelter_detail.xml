@@ -25,63 +25,63 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/shelterUniqueKeyTextView"
+                android:id="@+id/shelterDetailUniqueKeyTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterNameTextView"
+                android:id="@+id/shelterDetailNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterCapacityTextView"
+                android:id="@+id/shelterDetailCapacityTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterRestrictionsTextView"
+                android:id="@+id/shelterDetailRestrictionsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterLongitudeTextView"
+                android:id="@+id/shelterDetailLongitudeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterLatitudeTextView"
+                android:id="@+id/shelterDetailLatitudeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterAddressTextView"
+                android:id="@+id/shelterDetailAddressTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterSpecialNotesTextView"
+                android:id="@+id/shelterDetailSpecialNotesTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/shelterPhoneNumberTextView"
+                android:id="@+id/shelterDetailPhoneNumberTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
