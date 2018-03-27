@@ -14,6 +14,7 @@ public class Shelter implements Parcelable {
     private String address;
     private String specialNotes;
     private String phoneNumber;
+    private int vacancy;
 
     // Weird thing from Parcelable
 
@@ -42,6 +43,9 @@ public class Shelter implements Parcelable {
         this.address = address;
         this.specialNotes = specialNotes;
         this.phoneNumber = phoneNumber;
+        try {
+            this.vacancy = Integer.parseInt(this.capacity);
+        } catch (Exception e) { this.vacancy = -1;}
     }
 
     public Shelter(String csvString) {
@@ -56,6 +60,9 @@ public class Shelter implements Parcelable {
         this.specialNotes = getAndRemoveFirstString(csv);
         // At this point all other fields have been removed, so we just need to cast to string and remove quotes just in case
         this.phoneNumber = csv.toString().replace("\"", "");
+        try {
+            this.vacancy = Integer.parseInt(this.capacity);
+        } catch (Exception e) { this.vacancy = -1;}
     }
 
     protected Shelter(Parcel in) {
@@ -68,6 +75,9 @@ public class Shelter implements Parcelable {
         address = in.readString();
         specialNotes = in.readString();
         phoneNumber = in.readString();
+        try {
+            this.vacancy = Integer.parseInt(this.capacity);
+        } catch (Exception e) { this.vacancy = -1;}
     }
 
     // Getters
@@ -108,6 +118,10 @@ public class Shelter implements Parcelable {
         return phoneNumber;
     }
 
+    public int getVacancy() {
+        return vacancy;
+    }
+
     // Setters
 
     public void setUniqueKey(int uniqueKey) {
@@ -144,6 +158,10 @@ public class Shelter implements Parcelable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public void setVacancy(int vacancy) {
+        this.vacancy = vacancy;
     }
 
     // Helpers
@@ -192,6 +210,7 @@ public class Shelter implements Parcelable {
         parcel.writeString(address);
         parcel.writeString(specialNotes);
         parcel.writeString(phoneNumber);
+        parcel.writeInt(vacancy);
     }
 
     // toString
