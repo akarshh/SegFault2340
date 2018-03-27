@@ -24,9 +24,12 @@ public class ShelterDetailActivity extends AppCompatActivity {
     TextView specialNotesTextView;
     TextView phoneNumberTextView;
     TextView vacancyTextView;
-
+    Button minusReserveButton;
+    Button plusReserveButton;
+    TextView reserveTextView;
     Button reserveButton;
-    EditText reserveText;
+
+    int reservedBeds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +48,16 @@ public class ShelterDetailActivity extends AppCompatActivity {
         specialNotesTextView = findViewById(R.id.shelterDetailSpecialNotesTextView);
         phoneNumberTextView = findViewById(R.id.shelterDetailPhoneNumberTextView);
         vacancyTextView = findViewById(R.id.shelterDetailVacancyTextView);
+        minusReserveButton = findViewById(R.id.minusReserveButton);
+        plusReserveButton = findViewById(R.id.plusReserveButton);
+        reserveTextView = findViewById(R.id.reserveTextView);
+        reserveButton = findViewById(R.id.reserveButton);
 
         // Get shelter from intent's extras
         final Shelter shelter = getIntent().getExtras().getParcelable("SHELTER");
+
+        // Get whether user can reserve beds
+        boolean canReserve = getIntent().getExtras().getBoolean("CANRESERVE", false);
 
         // Populate detail view with shelter's information
         uniqueKeyTextView.setText("Unique Key: " + shelter.getUniqueKey());
@@ -61,22 +71,51 @@ public class ShelterDetailActivity extends AppCompatActivity {
         phoneNumberTextView.setText("Phone Number: " + shelter.getPhoneNumber());
         vacancyTextView.setText("Vacancy: " + shelter.getVacancy());
 
-        reserveButton = findViewById(R.id.reserveButton);
-        reserveText = findViewById(R.id.reserveText);
+        // Hide vacancy if capacity is incompatible (vacancy is -1)
+        if(shelter.getVacancy() == -1) {
+            vacancyTextView.setVisibility(View.INVISIBLE);
+        }
+
+        // Hide reservation controls if capacity is incompatible (vacancy is -1) or if user can't reserve new beds
+        if(shelter.getVacancy() == -1 || !canReserve) {
+            minusReserveButton.setVisibility(View.INVISIBLE);
+            plusReserveButton.setVisibility(View.INVISIBLE);
+            reserveTextView.setVisibility(View.INVISIBLE);
+            reserveButton.setVisibility(View.INVISIBLE);
+        }
+
+        // Set buttons' behaviours
+        minusReserveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(reservedBeds > 0) {
+                    reservedBeds--;
+                    reserveTextView.setText(String.valueOf(reservedBeds));
+                }
+            }
+        });
+
+        plusReserveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(reservedBeds < shelter.getVacancy()) {
+                    reservedBeds++;
+                    reserveTextView.setText(String.valueOf(reservedBeds));
+                }
+            }
+        });
 
         reserveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int amount = Integer.parseInt(reserveText.getText().toString());
-                if(amount <= shelter.getVacancy() && amount >= 1) {
-                    shelter.setVacancy(shelter.getVacancy() - amount);
+                if(reservedBeds <= shelter.getVacancy() && reservedBeds >= 1) {
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("KEY", shelter.getUniqueKey());
-                    resultIntent.putExtra("VACANCY", shelter.getVacancy());
+                    resultIntent.putExtra("RESERVEDBEDS", reservedBeds);
                     setResult(Activity.RESULT_OK, resultIntent);
                     finish();
                 } else {
-                    Toast.makeText(ShelterDetailActivity.this, "Invalid Input", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShelterDetailActivity.this, "Please select a valid amount of beds!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

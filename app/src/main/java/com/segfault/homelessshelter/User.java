@@ -1,5 +1,9 @@
 package com.segfault.homelessshelter;
 
+import android.util.Log;
+
+import java.util.Arrays;
+
 public class User {
 
     private String name;
@@ -12,6 +16,11 @@ public class User {
         this.email = email;
         this.password = password;
         this.admin = admin;
+    }
+
+    public static User createFromStorageEntry(String storageEntry) {
+        String[] fields = storageEntry.split("\\|"); // We need to escape "|" because of regex
+        return new User(fields[0], fields[1], fields[2], Boolean.parseBoolean(fields[3]));
     }
 
     // Getters
@@ -34,7 +43,6 @@ public class User {
 
     // Setters
 
-
     public void setName(String name) {
         this.name = name;
     }
@@ -49,5 +57,18 @@ public class User {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    // Helper methods
+
+    public String toEntry() {
+        return name + "|" + email + "|" + password + "|" + String.valueOf(isAdmin());
+    }
+
+    // toString
+
+    @Override
+    public String toString() {
+        return name + " | " + email + " | " + password + " | " + String.valueOf(isAdmin());
     }
 }

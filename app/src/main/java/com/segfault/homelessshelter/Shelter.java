@@ -16,20 +16,6 @@ public class Shelter implements Parcelable {
     private String phoneNumber;
     private int vacancy;
 
-    // Weird thing from Parcelable
-
-    public static final Creator<Shelter> CREATOR = new Creator<Shelter>() {
-        @Override
-        public Shelter createFromParcel(Parcel in) {
-            return new Shelter(in);
-        }
-
-        @Override
-        public Shelter[] newArray(int size) {
-            return new Shelter[size];
-        }
-    };
-
     // Constructors
 
     public Shelter(int uniqueKey, String shelterName, String capacity, String restrictions, double longitude,
@@ -45,24 +31,9 @@ public class Shelter implements Parcelable {
         this.phoneNumber = phoneNumber;
         try {
             this.vacancy = Integer.parseInt(this.capacity);
-        } catch (Exception e) { this.vacancy = -1;}
-    }
-
-    public Shelter(String csvString) {
-        StringBuilder csv = new StringBuilder(csvString);
-        this.uniqueKey = getAndRemoveFirstInt(csv);
-        this.shelterName = getAndRemoveFirstString(csv);
-        this.capacity = getAndRemoveFirstString(csv);
-        this.restrictions = getAndRemoveFirstString(csv);
-        this.longitude = getAndRemoveFirstDouble(csv);
-        this.latitude = getAndRemoveFirstDouble(csv);
-        this.address = getAndRemoveFirstString(csv);
-        this.specialNotes = getAndRemoveFirstString(csv);
-        // At this point all other fields have been removed, so we just need to cast to string and remove quotes just in case
-        this.phoneNumber = csv.toString().replace("\"", "");
-        try {
-            this.vacancy = Integer.parseInt(this.capacity);
-        } catch (Exception e) { this.vacancy = -1;}
+        } catch (Exception e) {
+            this.vacancy = -1;
+        }
     }
 
     protected Shelter(Parcel in) {
@@ -75,9 +46,33 @@ public class Shelter implements Parcelable {
         address = in.readString();
         specialNotes = in.readString();
         phoneNumber = in.readString();
-        try {
-            this.vacancy = Integer.parseInt(this.capacity);
-        } catch (Exception e) { this.vacancy = -1;}
+        vacancy = in.readInt();
+    }
+
+    // Static factories
+
+    public static Shelter createFromCSVEntry(String csvEntry) {
+        StringBuilder csv = new StringBuilder(csvEntry);
+        int uniqueKey = getAndRemoveFirstInt(csv);
+        String shelterName = getAndRemoveFirstString(csv);
+        String capacity = getAndRemoveFirstString(csv);
+        String restrictions = getAndRemoveFirstString(csv);
+        double longitude = getAndRemoveFirstDouble(csv);
+        double latitude = getAndRemoveFirstDouble(csv);
+        String address = getAndRemoveFirstString(csv);
+        String specialNotes = getAndRemoveFirstString(csv);
+        // At this point all other fields have been removed, so we just need to cast to string and remove quotes just in case
+        String phoneNumber = csv.toString().replace("\"", "");
+        return new Shelter(uniqueKey, shelterName, capacity, restrictions, longitude, latitude,
+                address, specialNotes, phoneNumber);
+    }
+
+    public static Shelter createFromStorageEntry(String storageEntry) {
+        String[] fields = storageEntry.split("\\|"); // We need to escape "|" because of regex
+        Shelter shelter = new Shelter(Integer.parseInt(fields[0]), fields[1], fields[2], fields[3],
+                Double.parseDouble(fields[4]), Double.parseDouble(fields[5]), fields[6], fields[7], fields[8]);
+        shelter.vacancy = Integer.parseInt(fields[9]);
+        return shelter;
     }
 
     // Getters
@@ -192,6 +187,21 @@ public class Shelter implements Parcelable {
         return field;
     }
 
+    // toEntry
+
+    public String toEntry() {
+        return uniqueKey + "|" + shelterName + "|" + capacity + "|" + restrictions + "|" + longitude + "|" +
+                latitude + "|" + address + "|" + specialNotes + "|" + phoneNumber + "|" + vacancy;
+    }
+
+    // toString
+
+    @Override
+    public String toString() {
+        return uniqueKey + " | " + shelterName + " | " + capacity + " | " + restrictions + " | " + longitude
+                + " | " + latitude + " | " + address + " | " + specialNotes + " | " + phoneNumber;
+    }
+
     // Parcelable methods
 
     @Override
@@ -213,11 +223,17 @@ public class Shelter implements Parcelable {
         parcel.writeInt(vacancy);
     }
 
-    // toString
+    // Weird thing from Parcelable
 
-    @Override
-    public String toString() {
-        return uniqueKey + " | " + shelterName + " | " + capacity + " | " + restrictions + " | " + longitude
-                + " | " + latitude + " | " + address + " | " + specialNotes + " | " + phoneNumber;
-    }
+    public static final Creator<Shelter> CREATOR = new Creator<Shelter>() {
+        @Override
+        public Shelter createFromParcel(Parcel in) {
+            return new Shelter(in);
+        }
+
+        @Override
+        public Shelter[] newArray(int size) {
+            return new Shelter[size];
+        }
+    };
 }

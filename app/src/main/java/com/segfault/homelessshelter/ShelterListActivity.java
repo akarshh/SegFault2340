@@ -1,10 +1,13 @@
 package com.segfault.homelessshelter;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,14 +20,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ShelterListActivity extends AppCompatActivity {
 
     LinearLayout shelterListLinearLayout;
     Toolbar toolbar;
 
-    ArrayList<Shelter> shelters;
+    SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
+    int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
+    int reservedBeds;
+
     boolean isAdvancedSearch;
     String shelterNameFilter;
     String genderFilter;
@@ -40,9 +47,12 @@ public class ShelterListActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.shelterListToolbar);
 
         // Set other variables
-        shelters = new ArrayList<>();
+        Context context = getApplicationContext();
+        uniqueKeyOfReservedBeds = Storage.getInstance(context).loadInt("uniqueKeyOfReservedBeds");
+        reservedBeds = Storage.getInstance(context).loadInt("reservedBeds");
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
+            // If extras != null, we came from advanced search
             isAdvancedSearch = true;
             shelterNameFilter = extras.getString("SHELTERNAME");
             genderFilter = extras.getString("GENDER");
@@ -52,25 +62,17 @@ public class ShelterListActivity extends AppCompatActivity {
         // Set the toolbar
         setSupportActionBar(toolbar);
 
-        // Open database.csv file
-        int csvId = getResources().getIdentifier("database", "raw", getPackageName());
-        InputStream inputStream = getResources().openRawResource(csvId);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-        // Read file and populate ArrayList
-        try {
-            reader.readLine(); // Read line once to skip first line in database.csv
-            String line = reader.readLine();
-            while(line != null) {
-                Shelter shelter = new Shelter(line);
-                shelters.add(shelter.getUniqueKey(), shelter);
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (IOException e) {}
+        // Populate shelter ArrayList either from CSV file or storage
+        Set<String> shelterStorageEntries = Storage.getInstance(context).loadStringSet("shelters");
+        if(shelterStorageEntries.isEmpty()) {
+            populateArrayListFromCSV();
+        } else {
+            populateArrayListFromStorage(shelterStorageEntries);
+        }
 
         // Populate shelter list view with shelters from ArrayList, filtering if necessary
-        for(final Shelter shelter : shelters) {
+        for(int i = 0; i < shelters.size(); i++) {
+            final Shelter shelter = shelters.get(i);
             // Check filters first
             if(!matchesFilter(shelter)) {
                 continue;
@@ -85,7 +87,8 @@ public class ShelterListActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent intent = new Intent(ShelterListActivity.this, ShelterDetailActivity.class);
                     intent.putExtra("SHELTER", shelter);
-                    startActivity(intent);
+                    intent.putExtra("CANRESERVE", uniqueKeyOfReservedBeds == -1);
+                    startActivityForResult(intent, 0);
                 }
             });
             shelterListLinearLayout.addView(shelterNameTextView);
@@ -103,12 +106,93 @@ public class ShelterListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // User has clicked the search toolbar button
-        startActivity(new Intent(this, AdvancedSearchActivity.class));
-        return true;
+        switch(item.getItemId()) {
+            case R.id.action_search:
+                // User has clicked the search toolbar button
+                startActivity(new Intent(this, AdvancedSearchActivity.class));
+                return true;
+            case R.id.action_cancel:
+                // User has clicked the cancel reservation toolbar button
+                resetReservations();
+                return false;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // We're coming back from the details activity after the user clicked reserve
+        if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            setReservations(data);
+        }
     }
 
     // Private helper methods
+
+    private void resetReservations() {
+        if(uniqueKeyOfReservedBeds != -1) {
+            Shelter shelter = shelters.get(uniqueKeyOfReservedBeds);
+            shelter.setVacancy(shelter.getVacancy() + reservedBeds); // Reset beds
+            uniqueKeyOfReservedBeds = -1;
+            reservedBeds = 0;
+            Context context = getApplicationContext();
+            Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
+            Storage.getInstance(context).saveInt("reservedBeds", reservedBeds);
+            saveShelters();
+        }
+    }
+
+    private void setReservations(Intent data) {
+        uniqueKeyOfReservedBeds = data.getIntExtra("KEY", -1);
+        reservedBeds = data.getIntExtra("RESERVEDBEDS", 0);
+        if(uniqueKeyOfReservedBeds != -1) {
+            Shelter shelter = shelters.get(uniqueKeyOfReservedBeds);
+            shelter.setVacancy(shelter.getVacancy() - reservedBeds);
+        }
+        Context context = getApplicationContext();
+        Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
+        Storage.getInstance(context).saveInt("reservedBeds", reservedBeds);
+        saveShelters();
+    }
+
+    private void saveShelters() {
+        Set<String> shelterSet = new HashSet<>();
+        for(int i = 0; i < shelters.size(); i++) {
+            Shelter shelter = shelters.get(i);
+            shelterSet.add(shelter.toEntry());
+        }
+        Context context = getApplicationContext();
+        Storage.getInstance(context).saveStringSet("shelters", shelterSet);
+    }
+
+    private void populateArrayListFromCSV() {
+        shelters = new SparseArray<>();
+        // Open database.csv file
+        int csvId = getResources().getIdentifier("database", "raw", getPackageName());
+        InputStream inputStream = getResources().openRawResource(csvId);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        // Read file and populate ArrayList
+        try {
+            reader.readLine(); // Read line once to skip first line in database.csv
+            String line = reader.readLine();
+            while(line != null) {
+                Shelter shelter = Shelter.createFromCSVEntry(line);
+                shelters.put(shelter.getUniqueKey(), shelter);
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {}
+    }
+
+    private void populateArrayListFromStorage(Set<String> shelterStorageEntries) {
+        shelters = new SparseArray<>();
+        for(String shelterStorageEntry : shelterStorageEntries) {
+            Shelter shelter = Shelter.createFromStorageEntry(shelterStorageEntry);
+            shelters.put(shelter.getUniqueKey(), shelter);
+        }
+    }
 
     private boolean matchesFilter(Shelter shelter) {
         // Return true if we're not searching, or if we match all three filters
