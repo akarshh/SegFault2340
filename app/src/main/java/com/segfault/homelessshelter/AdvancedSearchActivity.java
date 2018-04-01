@@ -48,7 +48,12 @@ public class AdvancedSearchActivity extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdvancedSearchActivity.this, ShelterListActivity.class);
+                Intent intent;
+                if(getIntent().getExtras().getString("ORIGIN", "ShelterListActivity").equals("ShelterListActivity")) {
+                    intent = new Intent(AdvancedSearchActivity.this, ShelterListActivity.class);
+                } else {
+                    intent = new Intent(AdvancedSearchActivity.this, MapsActivity.class);
+                }
                 intent.putExtra("SHELTERNAME", nameEditText.getText().toString());
                 intent.putExtra("GENDER", genderSpinner.getSelectedItem().toString());
                 intent.putExtra("AGERANGE", ageRangeSpinner.getSelectedItem().toString());

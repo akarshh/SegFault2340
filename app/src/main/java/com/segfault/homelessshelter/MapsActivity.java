@@ -3,32 +3,40 @@ package com.segfault.homelessshelter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ShelterListActivity extends AppCompatActivity {
+/**
+ * Uses Google's default Google Maps Activity template
+ */
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    LinearLayout shelterListLinearLayout;
+    private GoogleMap mMap;
     Toolbar toolbar;
 
     SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
+    HashMap<Marker, Integer> markersToKeys; // There is no way to add the shelter key to a marker, so we need to use a HashMap
     int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
     int reservedBeds;
 
@@ -40,19 +48,23 @@ public class ShelterListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shelter_list);
+        setContentView(R.layout.activity_maps);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         // Set view variables
-        shelterListLinearLayout = findViewById(R.id.shelterListLinearLayout);
-        toolbar = findViewById(R.id.shelterListToolbar);
+        toolbar = findViewById(R.id.mapsToolbar);
 
         // Set other variables
+        markersToKeys = new HashMap<>();
         Context context = getApplicationContext();
         uniqueKeyOfReservedBeds = Storage.getInstance(context).loadInt("uniqueKeyOfReservedBeds");
         reservedBeds = Storage.getInstance(context).loadInt("reservedBeds");
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            // If extras != null, we came from advanced search
             isAdvancedSearch = true;
             shelterNameFilter = extras.getString("SHELTERNAME");
             genderFilter = extras.getString("GENDER");
@@ -69,36 +81,58 @@ public class ShelterListActivity extends AppCompatActivity {
         } else {
             populateArrayListFromStorage(shelterStorageEntries);
         }
+    }
 
-        // Populate shelter list view with shelters from ArrayList, filtering if necessary
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add the shelter markers
         for(int i = 0; i < shelters.size(); i++) {
             final Shelter shelter = shelters.get(i);
             // Check filters first
             if(!matchesFilter(shelter)) {
                 continue;
             }
-            // Passed filters, if any, so add to view
-            TextView shelterNameTextView = new TextView(this);
-            shelterNameTextView.setText(shelter.getShelterName());
-            shelterNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-            // Define behaviour for going to shelter detail view after clicking shelter
-            shelterNameTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(ShelterListActivity.this, ShelterDetailActivity.class);
-                    intent.putExtra("SHELTER", shelter);
-                    intent.putExtra("CANRESERVE", uniqueKeyOfReservedBeds == -1);
-                    startActivityForResult(intent, 0);
-                }
-            });
-            shelterListLinearLayout.addView(shelterNameTextView);
+            LatLng shelterPosition = new LatLng(shelter.getLatitude(), shelter.getLongitude());
+            Marker marker = mMap.addMarker(new MarkerOptions().position(shelterPosition).title(shelter.getShelterName()));
+            markersToKeys.put(marker, shelter.getUniqueKey());
+        }
+
+        // Move the camera to Atlanta with zoom
+        LatLng atlantaPosition = new LatLng(33.7490, -84.3880);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlantaPosition, 11.0f));
+
+        // Set marker click listener (below) to handle marker clicks
+        mMap.setOnMarkerClickListener(new MarkerClickListener());
+    }
+
+    private class MarkerClickListener implements GoogleMap.OnMarkerClickListener {
+
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            Shelter shelter = shelters.get(markersToKeys.get(marker));
+            Intent intent = new Intent(MapsActivity.this, ShelterDetailActivity.class);
+            intent.putExtra("SHELTER", shelter);
+            intent.putExtra("CANRESERVE", uniqueKeyOfReservedBeds == -1);
+            startActivityForResult(intent, 0);
+            return true;
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the toolbar and add buttons
-        getMenuInflater().inflate(R.menu.shelter_list_menu, menu);
+        getMenuInflater().inflate(R.menu.maps_menu, menu);
         // The return determines if the toolbar should appear (true if it should, false otherwise)
         // So if this is not an advanced search, we return true, otherwise false
         return !isAdvancedSearch;
@@ -110,15 +144,15 @@ public class ShelterListActivity extends AppCompatActivity {
             case R.id.action_search:
                 // User has clicked the search toolbar button
                 Intent intent = new Intent(this, AdvancedSearchActivity.class);
-                intent.putExtra("ORIGIN", "ShelterListActivity");
+                intent.putExtra("ORIGIN", "MapsActivity");
                 startActivity(intent);
                 return true;
             case R.id.action_cancel:
                 // User has clicked the cancel reservation toolbar button
                 resetReservations();
                 return false;
-            case R.id.action_map:
-                startActivity(new Intent(this, MapsActivity.class));
+            case R.id.action_list:
+                finish();
                 return true;
         }
         return false;
@@ -134,7 +168,7 @@ public class ShelterListActivity extends AppCompatActivity {
         }
     }
 
-    // Private helper methods
+    // Helper methods
 
     private void resetReservations() {
         if(uniqueKeyOfReservedBeds != -1) {

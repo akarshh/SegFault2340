@@ -40,9 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         Set<String> userStorageEntries = Storage.getInstance(context).loadStringSet("users");
         for(String userStorageEntry : userStorageEntries) {
-            Log.d("DEBUG", userStorageEntry);
             User user = User.createFromStorageEntry(userStorageEntry);
-            Log.d("DEBUG", user.toString());
             users.put(user.getEmail(), user);
         }
 

@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.segfault.homelessshelter">
 
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the 'MyLocation' functionality. 
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,7 +27,14 @@
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".ShelterListActivity" />
         <activity android:name=".ShelterDetailActivity" />
-        <activity android:name=".AdvancedSearchActivity"></activity>
+        <activity android:name=".AdvancedSearchActivity" />
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCkNHp7IYUV7vCN3JDfSxESnuipzH4oF9Q" />
     </application>
 
 </manifest>
