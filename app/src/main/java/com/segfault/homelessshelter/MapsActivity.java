@@ -31,10 +31,6 @@ import java.util.Set;
  */
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    final double ATL_LNG = -84.3880;
-    final double ATL_LAT = 33.7490;
-    final float ZOOM = 11.0f;
-
     private SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
     private HashMap<Marker, Integer> markersToKeys; // There is no way to add the shelter key to a marker, so we need to use a HashMap
     private int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
@@ -108,7 +104,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         // Move the camera to Atlanta with zoom
+        double ATL_LAT = 33.7490;
+        double ATL_LNG = -84.3880;
         LatLng atlantaPosition = new LatLng(ATL_LAT, ATL_LNG);
+        float ZOOM = 11.0f;
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlantaPosition, ZOOM));
 
         // Set marker click listener (below) to handle marker clicks

@@ -25,8 +25,6 @@ import java.util.Set;
 
 public class ShelterListActivity extends AppCompatActivity {
 
-    final int FONT_SIZE = 20;
-
     private SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
     private int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
     private int reservedBeds;
@@ -81,6 +79,7 @@ public class ShelterListActivity extends AppCompatActivity {
             // Passed filters, if any, so add to view
             TextView shelterNameTextView = new TextView(this);
             shelterNameTextView.setText(shelter.getShelterName());
+            int FONT_SIZE = 20;
             shelterNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE);
             // Define behaviour for going to shelter detail view after clicking shelter
             shelterNameTextView.setOnClickListener(new View.OnClickListener() {
