@@ -3,23 +3,23 @@ package com.segfault.homelessshelter;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Shelter implements Parcelable {
+public final class Shelter implements Parcelable {
 
-    private int uniqueKey;
-    private String shelterName;
-    private String capacity; // Sometimes this can be a string
-    private String restrictions;
-    private double longitude;
-    private double latitude;
-    private String address;
-    private String specialNotes;
-    private String phoneNumber;
+    private final int uniqueKey;
+    private final String shelterName;
+    private final String capacity; // Sometimes this can be a string
+    private final String restrictions;
+    private final double longitude;
+    private final double latitude;
+    private final String address;
+    private final String specialNotes;
+    private final String phoneNumber;
     private int vacancy;
 
     // Constructors
 
-    public Shelter(int uniqueKey, String shelterName, String capacity, String restrictions, double longitude,
-                   double latitude, String address, String specialNotes, String phoneNumber) {
+    private Shelter(int uniqueKey, String shelterName, String capacity, String restrictions, double longitude,
+                    double latitude, String address, String specialNotes, String phoneNumber) {
         this.uniqueKey = uniqueKey;
         this.shelterName = shelterName;
         this.capacity = capacity;
@@ -36,7 +36,7 @@ public class Shelter implements Parcelable {
         }
     }
 
-    protected Shelter(Parcel in) {
+    private Shelter(Parcel in) {
         uniqueKey = in.readInt();
         shelterName = in.readString();
         capacity = in.readString();
@@ -62,7 +62,8 @@ public class Shelter implements Parcelable {
         String address = getAndRemoveFirstString(csv);
         String specialNotes = getAndRemoveFirstString(csv);
         // At this point all other fields have been removed, so we just need to cast to string and remove quotes just in case
-        String phoneNumber = csv.toString().replace("\"", "");
+        String phoneNumber = csv.toString();
+        phoneNumber = phoneNumber.replace("\"", "");
         return new Shelter(uniqueKey, shelterName, capacity, restrictions, longitude, latitude,
                 address, specialNotes, phoneNumber);
     }
@@ -119,41 +120,59 @@ public class Shelter implements Parcelable {
 
     // Setters
 
-    public void setUniqueKey(int uniqueKey) {
-        this.uniqueKey = uniqueKey;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setUniqueKey(int uniqueKey) {
+//        this.uniqueKey = uniqueKey;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setShelterName(String shelterName) {
-        this.shelterName = shelterName;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setShelterName(String shelterName) {
+//        this.shelterName = shelterName;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setCapacity(String capacity) {
-        this.capacity = capacity;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setCapacity(String capacity) {
+//        this.capacity = capacity;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setRestrictions(String restrictions) {
-        this.restrictions = restrictions;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setRestrictions(String restrictions) {
+//        this.restrictions = restrictions;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setLongitude(double longitude) {
+//        this.longitude = longitude;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setLatitude(double latitude) {
+//        this.latitude = latitude;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setAddress(String address) {
+//        this.address = address;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setSpecialNotes(String specialNotes) {
-        this.specialNotes = specialNotes;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setSpecialNotes(String specialNotes) {
+//        this.specialNotes = specialNotes;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setPhoneNumber(String phoneNumber) {
+//        this.phoneNumber = phoneNumber;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
     public void setVacancy(int vacancy) {
         this.vacancy = vacancy;

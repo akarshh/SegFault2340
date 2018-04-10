@@ -31,63 +31,54 @@
                 android:id="@+id/shelterDetailUniqueKeyTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailCapacityTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailRestrictionsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailLongitudeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailLatitudeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailAddressTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailSpecialNotesTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/shelterDetailPhoneNumberTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <Space
@@ -98,7 +89,6 @@
                 android:id="@+id/shelterDetailVacancyTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -111,13 +101,13 @@
                     android:id="@+id/minusReserveButton"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:text="-" />
+                    android:text="@string/minus" />
 
                 <TextView
                     android:id="@+id/reserveTextView"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="0"
+                    android:text="@string/zero"
                     android:textAlignment="center"
                     android:textSize="20sp" />
 
@@ -125,14 +115,14 @@
                     android:id="@+id/plusReserveButton"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:text="+" />
+                    android:text="@string/plus" />
             </LinearLayout>
 
             <Button
                 android:id="@+id/reserveButton"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="Reserve"
+                android:text="@string/reserve"
                 tools:layout_editor_absoluteX="148dp"
                 tools:layout_editor_absoluteY="503dp" />
 

@@ -1,4 +1,23 @@
 <resources>
     <string name="app_name">Homeless Shelter</string>
     <string name="title_activity_maps">Map</string>
+    <string name="minus">-</string>
+    <string name="zero">0</string>
+    <string name="plus">+</string>
+    <string name="reserve">Reserve</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="admin">Admin?</string>
+    <string name="admin_key">Admin Key</string>
+    <string name="ok">OK</string>
+    <string name="shelter_name">Shelter name</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="map">Map</string>
+    <string name="cancel">Cancel</string>
+    <string name="search">Search</string>
+    <string name="unique_key_concat">Unique Key: %d</string>
+    <string name="vacancy_concat">Vacancy: %d</string>
 </resources>

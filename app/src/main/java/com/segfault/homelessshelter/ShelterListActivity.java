@@ -3,13 +3,14 @@ package com.segfault.homelessshelter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,23 +20,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ShelterListActivity extends AppCompatActivity {
 
-    LinearLayout shelterListLinearLayout;
-    Toolbar toolbar;
+    final int FONT_SIZE = 20;
 
-    SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
-    int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
-    int reservedBeds;
+    private SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
+    private int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
+    private int reservedBeds;
 
-    boolean isAdvancedSearch;
-    String shelterNameFilter;
-    String genderFilter;
-    String ageRangeFilter;
+    private boolean isAdvancedSearch;
+    private String shelterNameFilter;
+    private String genderFilter;
+    private String ageRangeFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +42,16 @@ public class ShelterListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shelter_list);
 
         // Set view variables
-        shelterListLinearLayout = findViewById(R.id.shelterListLinearLayout);
-        toolbar = findViewById(R.id.shelterListToolbar);
+        LinearLayout shelterListLinearLayout = findViewById(R.id.shelterListLinearLayout);
+        Toolbar toolbar = findViewById(R.id.shelterListToolbar);
 
         // Set other variables
         Context context = getApplicationContext();
-        uniqueKeyOfReservedBeds = Storage.getInstance(context).loadInt("uniqueKeyOfReservedBeds");
-        reservedBeds = Storage.getInstance(context).loadInt("reservedBeds");
-        Bundle extras = getIntent().getExtras();
+        Storage storage = Storage.getInstance(context);
+        uniqueKeyOfReservedBeds = storage.loadInt("uniqueKeyOfReservedBeds");
+        reservedBeds = storage.loadInt("reservedBeds");
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
         if(extras != null) {
             // If extras != null, we came from advanced search
             isAdvancedSearch = true;
@@ -63,7 +64,7 @@ public class ShelterListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Populate shelter ArrayList either from CSV file or storage
-        Set<String> shelterStorageEntries = Storage.getInstance(context).loadStringSet("shelters");
+        Set<String> shelterStorageEntries = storage.loadStringSet("shelters");
         if(shelterStorageEntries.isEmpty()) {
             populateArrayListFromCSV();
         } else {
@@ -80,7 +81,7 @@ public class ShelterListActivity extends AppCompatActivity {
             // Passed filters, if any, so add to view
             TextView shelterNameTextView = new TextView(this);
             shelterNameTextView.setText(shelter.getShelterName());
-            shelterNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+            shelterNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE);
             // Define behaviour for going to shelter detail view after clicking shelter
             shelterNameTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -98,7 +99,8 @@ public class ShelterListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the toolbar and add buttons
-        getMenuInflater().inflate(R.menu.shelter_list_menu, menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.shelter_list_menu, menu);
         // The return determines if the toolbar should appear (true if it should, false otherwise)
         // So if this is not an advanced search, we return true, otherwise false
         return !isAdvancedSearch;
@@ -129,7 +131,7 @@ public class ShelterListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // We're coming back from the details activity after the user clicked reserve
-        if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
+        if((requestCode == 0) && (resultCode == Activity.RESULT_OK)) {
             setReservations(data);
         }
     }
@@ -143,8 +145,9 @@ public class ShelterListActivity extends AppCompatActivity {
             uniqueKeyOfReservedBeds = -1;
             reservedBeds = 0;
             Context context = getApplicationContext();
-            Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
-            Storage.getInstance(context).saveInt("reservedBeds", reservedBeds);
+            Storage storage = Storage.getInstance(context);
+            storage.saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
+            storage.saveInt("reservedBeds", reservedBeds);
             saveShelters();
         }
     }
@@ -157,8 +160,9 @@ public class ShelterListActivity extends AppCompatActivity {
             shelter.setVacancy(shelter.getVacancy() - reservedBeds);
         }
         Context context = getApplicationContext();
-        Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
-        Storage.getInstance(context).saveInt("reservedBeds", reservedBeds);
+        Storage storage = Storage.getInstance(context);
+        storage.saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
+        storage.saveInt("reservedBeds", reservedBeds);
         saveShelters();
     }
 
@@ -169,14 +173,16 @@ public class ShelterListActivity extends AppCompatActivity {
             shelterSet.add(shelter.toEntry());
         }
         Context context = getApplicationContext();
-        Storage.getInstance(context).saveStringSet("shelters", shelterSet);
+        Storage storage = Storage.getInstance(context);
+        storage.saveStringSet("shelters", shelterSet);
     }
 
     private void populateArrayListFromCSV() {
         shelters = new SparseArray<>();
         // Open database.csv file
-        int csvId = getResources().getIdentifier("database", "raw", getPackageName());
-        InputStream inputStream = getResources().openRawResource(csvId);
+        Resources resources = getResources();
+        int csvId = resources.getIdentifier("database", "raw", getPackageName());
+        InputStream inputStream = resources.openRawResource(csvId);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         // Read file and populate ArrayList
         try {
@@ -188,10 +194,10 @@ public class ShelterListActivity extends AppCompatActivity {
                 line = reader.readLine();
             }
             reader.close();
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
     }
 
-    private void populateArrayListFromStorage(Set<String> shelterStorageEntries) {
+    private void populateArrayListFromStorage(Iterable<String> shelterStorageEntries) {
         shelters = new SparseArray<>();
         for(String shelterStorageEntry : shelterStorageEntries) {
             Shelter shelter = Shelter.createFromStorageEntry(shelterStorageEntry);
@@ -201,18 +207,16 @@ public class ShelterListActivity extends AppCompatActivity {
 
     private boolean matchesFilter(Shelter shelter) {
         // Return true if we're not searching, or if we match all three filters
-        if (!isAdvancedSearch) return true;
-        return matchesShelterName(shelter.getShelterName())
-                && matchesGender(shelter.getRestrictions())
-                && matchesAgeRange(shelter.getRestrictions());
+        return !isAdvancedSearch || (matchesShelterName(shelter.getShelterName()) && matchesGender(shelter.getRestrictions()) && matchesAgeRange(shelter.getRestrictions()));
     }
 
     private boolean matchesShelterName(String shelterName) {
-        return shelterName.toLowerCase().contains(shelterNameFilter.toLowerCase());
+        String lowerCaseShelterName = shelterName.toLowerCase();
+        return lowerCaseShelterName.contains(shelterNameFilter.toLowerCase());
     }
 
     private boolean matchesGender(String restrictions) {
-        return genderFilter.equals("Anyone") // Gender wasn't filtered
+        return "Anyone".equals(genderFilter) // Gender wasn't filtered
                 || hasUnspecifiedGender(restrictions) // Shelter has unspecified gender restriction
                 || restrictions.contains(genderFilter); // Shelter matches gender restriction
     }
@@ -228,7 +232,7 @@ public class ShelterListActivity extends AppCompatActivity {
     }
 
     private boolean matchesAgeRange(String restrictions) {
-        return ageRangeFilter.equals("Anyone") // Age range wasn't filtered
+        return "Anyone".equals(ageRangeFilter) // Age range wasn't filtered
                 || hasUnspecifiedAgeRange(restrictions) // Shelter has unspecified age range restriction
                 || restrictions.contains(ageRangeFilter);  // Shelter matches age range restriction
     }

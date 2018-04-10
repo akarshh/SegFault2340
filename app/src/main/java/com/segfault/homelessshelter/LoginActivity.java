@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,16 +13,15 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText emailEditText;
-    EditText passwordEditText;
-    Button loginButton;
-    Button registerButton;
+    private EditText emailEditText;
+    private EditText passwordEditText;
 
-    HashMap<String, User> users; // Key is email
+    private Map<String, User> users; // Key is email
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +31,14 @@ public class LoginActivity extends AppCompatActivity {
         // Set view variables
         emailEditText = findViewById(R.id.loginEmailEditText);
         passwordEditText = findViewById(R.id.loginPasswordEditText);
-        loginButton = findViewById(R.id.loginLoginButton);
-        registerButton = findViewById(R.id.loginRegisterButton);
+        Button loginButton = findViewById(R.id.loginLoginButton);
+        Button registerButton = findViewById(R.id.loginRegisterButton);
 
         // Load users from storage
         users = new HashMap<>();
         Context context = getApplicationContext();
-        Set<String> userStorageEntries = Storage.getInstance(context).loadStringSet("users");
+        Storage storage = Storage.getInstance(context);
+        Set<String> userStorageEntries = storage.loadStringSet("users");
         for(String userStorageEntry : userStorageEntries) {
             User user = User.createFromStorageEntry(userStorageEntry);
             users.put(user.getEmail(), user);
@@ -48,9 +48,13 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = emailEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                if(users.containsKey(email) && users.get(email).getPassword().equals(password)) {
+                Editable emailEditTextText = emailEditText.getText();
+                String email = emailEditTextText.toString();
+                Editable passwordEditTextText = passwordEditText.getText();
+                String password = passwordEditTextText.toString();
+                User user = users.get(email);
+                String userPassword = user.getPassword();
+                if(users.containsKey(email) && userPassword.equals(password)) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
                     Toast.makeText(LoginActivity.this, "Incorrect email / password", Toast.LENGTH_SHORT).show();
@@ -72,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // We're coming back from the registration activity
-        if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
+        if((requestCode == 0) && (resultCode == Activity.RESULT_OK)) {
             String email = data.getStringExtra("EMAIL");
             if(users.containsKey(email)) {
                 // An account with this email already exists, so tell the user and don't create a new account

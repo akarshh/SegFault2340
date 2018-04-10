@@ -9,11 +9,11 @@ import java.util.Set;
 /**
  * Singleton for abstracting SharedPreferences
  */
-public class Storage {
+public final class Storage {
 
-    static Storage storage;
+    private static Storage storage;
 
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
 
     private Storage(Context context) {
         preferences = context.getSharedPreferences(

@@ -9,9 +9,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/registrationToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
+        android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
@@ -20,83 +18,91 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:layout_marginStart="85dp"
+        android:layout_marginLeft="85dp"
         android:layout_marginTop="56dp"
         android:ems="10"
-        android:hint="Name"
+        android:hint="@string/name"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/registrationEmailEditText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationToolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/registrationToolbar"
+        android:layout_marginStart="85dp" />
 
     <EditText
         android:id="@+id/registrationEmailEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:layout_marginStart="85dp"
+        android:layout_marginLeft="85dp"
         android:ems="10"
-        android:hint="Email"
+        android:hint="@string/email"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/registrationPasswordEditText"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="85dp" />
 
     <EditText
         android:id="@+id/registrationPasswordEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:layout_marginStart="84dp"
+        android:layout_marginLeft="84dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/registrationConfirmPasswordEditText"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="84dp" />
 
     <EditText
         android:id="@+id/registrationConfirmPasswordEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:layout_marginStart="85dp"
+        android:layout_marginLeft="85dp"
         android:ems="10"
-        android:hint="Confirm Password"
+        android:hint="@string/confirm_password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/registrationAdminKeyEditText"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="85dp" />
 
     <CheckBox
         android:id="@+id/registrationAdminCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
+        android:layout_marginLeft="44dp"
         android:layout_marginTop="24dp"
-        android:text="Admin?"
+        android:text="@string/admin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationConfirmPasswordEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/registrationConfirmPasswordEditText"
+        android:layout_marginStart="44dp" />
 
     <EditText
         android:id="@+id/registrationAdminKeyEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="44dp"
-        android:layout_marginEnd="37dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginRight="37dp"
+        android:layout_marginLeft="10dp"
         android:ems="10"
-        android:hint="Admin Key"
+        android:hint="@string/admin_key"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/registrationOKButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/registrationAdminCheckBox" />
+        app:layout_constraintStart_toEndOf="@+id/registrationAdminCheckBox"
+        android:layout_marginEnd="37dp"
+        android:layout_marginStart="10dp" />
 
     <Button
         android:id="@+id/registrationOKButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
-        android:layout_marginStart="148dp"
-        android:text="OK"
+        android:layout_marginLeft="148dp"
+        android:text="@string/ok"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="148dp" />
 
 </android.support.constraint.ConstraintLayout>

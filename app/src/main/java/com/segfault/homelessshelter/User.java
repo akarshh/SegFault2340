@@ -1,15 +1,11 @@
 package com.segfault.homelessshelter;
 
-import android.util.Log;
-
-import java.util.Arrays;
-
 public class User {
 
-    private String name;
-    private String email;
-    private String password;
-    private boolean admin;
+    private final String name;
+    private final String email;
+    private final String password;
+    private final boolean admin;
 
     public User(String name, String email, String password, boolean admin) {
         this.name = name;
@@ -25,9 +21,11 @@ public class User {
 
     // Getters
 
-    public String getName() {
-        return name;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public String getName() {
+//        return name;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
     public String getEmail() {
         return email;
@@ -37,27 +35,35 @@ public class User {
         return password;
     }
 
-    public boolean isAdmin() {
+    private boolean isAdmin() {
         return admin;
     }
 
     // Setters
 
-    public void setName(String name) {
-        this.name = name;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setEmail(String email) {
+//        this.email = email;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
+// --Commented out by Inspection START (4/9/18 11:31 PM):
+//    public void setAdmin(boolean admin) {
+//        this.admin = admin;
+//    }
+// --Commented out by Inspection STOP (4/9/18 11:31 PM)
 
     // Helper methods
 

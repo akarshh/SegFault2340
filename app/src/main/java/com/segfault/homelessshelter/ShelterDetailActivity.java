@@ -6,30 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class ShelterDetailActivity extends AppCompatActivity {
 
-    LinearLayout shelterDetailLinearLayout;
-    TextView uniqueKeyTextView;
-    TextView shelterNameTextView;
-    TextView capacityTextView;
-    TextView restrictionsTextView;
-    TextView longitudeTextView;
-    TextView latitudeTextView;
-    TextView addressTextView;
-    TextView specialNotesTextView;
-    TextView phoneNumberTextView;
-    TextView vacancyTextView;
-    Button minusReserveButton;
-    Button plusReserveButton;
-    TextView reserveTextView;
-    Button reserveButton;
+    private TextView reserveTextView;
 
-    int reservedBeds;
+    private int reservedBeds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,39 +22,40 @@ public class ShelterDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shelter_detail);
 
         // Set view variables
-        shelterDetailLinearLayout = findViewById(R.id.shelterDetailLinearLayout);
-        uniqueKeyTextView = findViewById(R.id.shelterDetailUniqueKeyTextView);
-        shelterNameTextView = findViewById(R.id.shelterDetailNameTextView);
-        capacityTextView = findViewById(R.id.shelterDetailCapacityTextView);
-        restrictionsTextView = findViewById(R.id.shelterDetailRestrictionsTextView);
-        longitudeTextView = findViewById(R.id.shelterDetailLongitudeTextView);
-        latitudeTextView = findViewById(R.id.shelterDetailLatitudeTextView);
-        addressTextView = findViewById(R.id.shelterDetailAddressTextView);
-        specialNotesTextView = findViewById(R.id.shelterDetailSpecialNotesTextView);
-        phoneNumberTextView = findViewById(R.id.shelterDetailPhoneNumberTextView);
-        vacancyTextView = findViewById(R.id.shelterDetailVacancyTextView);
-        minusReserveButton = findViewById(R.id.minusReserveButton);
-        plusReserveButton = findViewById(R.id.plusReserveButton);
+        TextView uniqueKeyTextView = findViewById(R.id.shelterDetailUniqueKeyTextView);
+        TextView shelterNameTextView = findViewById(R.id.shelterDetailNameTextView);
+        TextView capacityTextView = findViewById(R.id.shelterDetailCapacityTextView);
+        TextView restrictionsTextView = findViewById(R.id.shelterDetailRestrictionsTextView);
+        TextView longitudeTextView = findViewById(R.id.shelterDetailLongitudeTextView);
+        TextView latitudeTextView = findViewById(R.id.shelterDetailLatitudeTextView);
+        TextView addressTextView = findViewById(R.id.shelterDetailAddressTextView);
+        TextView specialNotesTextView = findViewById(R.id.shelterDetailSpecialNotesTextView);
+        TextView phoneNumberTextView = findViewById(R.id.shelterDetailPhoneNumberTextView);
+        TextView vacancyTextView = findViewById(R.id.shelterDetailVacancyTextView);
+        Button minusReserveButton = findViewById(R.id.minusReserveButton);
+        Button plusReserveButton = findViewById(R.id.plusReserveButton);
         reserveTextView = findViewById(R.id.reserveTextView);
-        reserveButton = findViewById(R.id.reserveButton);
+        Button reserveButton = findViewById(R.id.reserveButton);
 
         // Get shelter from intent's extras
-        final Shelter shelter = getIntent().getExtras().getParcelable("SHELTER");
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        final Shelter shelter = extras.getParcelable("SHELTER");
 
         // Get whether user can reserve beds
-        boolean canReserve = getIntent().getExtras().getBoolean("CANRESERVE", false);
+        boolean canReserve = extras.getBoolean("CANRESERVE", false);
 
         // Populate detail view with shelter's information
-        uniqueKeyTextView.setText("Unique Key: " + shelter.getUniqueKey());
-        shelterNameTextView.setText("Name: " + shelter.getShelterName());
-        capacityTextView.setText("Capacity: " + shelter.getCapacity());
-        restrictionsTextView.setText("Restrictions: " + shelter.getRestrictions());
-        longitudeTextView.setText("Longitude: " + shelter.getLongitude());
-        latitudeTextView.setText("Latitude: " + shelter.getLatitude());
-        addressTextView.setText("Address: " + shelter.getAddress());
-        specialNotesTextView.setText("Special Notes: " + shelter.getSpecialNotes());
-        phoneNumberTextView.setText("Phone Number: " + shelter.getPhoneNumber());
-        vacancyTextView.setText("Vacancy: " + shelter.getVacancy());
+        uniqueKeyTextView.setText(String.format(getString(R.string.unique_key_concat), shelter.getUniqueKey()));
+        shelterNameTextView.setText(String.format("Name: %s", shelter.getShelterName()));
+        capacityTextView.setText(String.format("Capacity: %s", shelter.getCapacity()));
+        restrictionsTextView.setText(String.format("Restrictions: %s", shelter.getRestrictions()));
+        longitudeTextView.setText(String.format("Longitude: %s", shelter.getLongitude()));
+        latitudeTextView.setText(String.format("Latitude: %s", shelter.getLatitude()));
+        addressTextView.setText(String.format("Address: %s", shelter.getAddress()));
+        specialNotesTextView.setText(String.format("Special Notes: %s", shelter.getSpecialNotes()));
+        phoneNumberTextView.setText(String.format("Phone Number: %s", shelter.getPhoneNumber()));
+        vacancyTextView.setText(String.format(getString(R.string.vacancy_concat), shelter.getVacancy()));
 
         // Hide vacancy if capacity is incompatible (vacancy is -1)
         if(shelter.getVacancy() == -1) {
@@ -77,7 +63,7 @@ public class ShelterDetailActivity extends AppCompatActivity {
         }
 
         // Hide reservation controls if capacity is incompatible (vacancy is -1) or if user can't reserve new beds
-        if(shelter.getVacancy() == -1 || !canReserve) {
+        if((shelter.getVacancy() == -1) || !canReserve) {
             minusReserveButton.setVisibility(View.INVISIBLE);
             plusReserveButton.setVisibility(View.INVISIBLE);
             reserveTextView.setVisibility(View.INVISIBLE);
@@ -108,14 +94,15 @@ public class ShelterDetailActivity extends AppCompatActivity {
         reserveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(reservedBeds <= shelter.getVacancy() && reservedBeds >= 1) {
+                if((reservedBeds <= shelter.getVacancy()) && (reservedBeds >= 1)) {
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("KEY", shelter.getUniqueKey());
                     resultIntent.putExtra("RESERVEDBEDS", reservedBeds);
                     setResult(Activity.RESULT_OK, resultIntent);
                     finish();
                 } else {
-                    Toast.makeText(ShelterDetailActivity.this, "Please select a valid amount of beds!", Toast.LENGTH_SHORT).show();
+                    Toast toast = Toast.makeText(ShelterDetailActivity.this, "Please select a valid amount of beds!", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             }
         });

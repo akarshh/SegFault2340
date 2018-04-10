@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -12,13 +13,12 @@ import android.widget.Toast;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    EditText nameEditText;
-    EditText emailEditText;
-    EditText passwordEditText;
-    EditText confirmPasswordEditText;
-    CheckBox adminCheckBox;
-    EditText adminKeyTextBox;
-    Button okButton;
+    private EditText nameEditText;
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private EditText confirmPasswordEditText;
+    private CheckBox adminCheckBox;
+    private EditText adminKeyTextBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +32,15 @@ public class RegistrationActivity extends AppCompatActivity {
         confirmPasswordEditText = findViewById(R.id.registrationConfirmPasswordEditText);
         adminCheckBox = findViewById(R.id.registrationAdminCheckBox);
         adminKeyTextBox = findViewById(R.id.registrationAdminKeyEditText);
-        okButton = findViewById(R.id.registrationOKButton);
+        Button okButton = findViewById(R.id.registrationOKButton);
 
         // OK button behaviour
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(adminCheckBox.isChecked() && !adminKeyTextBox.getText().toString().equals("tempkey")) {
+                Editable adminKeyTextBoxEditable = adminKeyTextBox.getText();
+                String adminKeyTextBoxString = adminKeyTextBoxEditable.toString();
+                if(adminCheckBox.isChecked() && !"tempkey".equals(adminKeyTextBoxString)) {
                     // User has selected admin, but has incorrect admin key
                     Toast.makeText(RegistrationActivity.this, "Admin key is incorrect", Toast.LENGTH_SHORT).show();
                     return;

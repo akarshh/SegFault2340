@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,18 +31,19 @@ import java.util.Set;
  */
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
-    Toolbar toolbar;
+    final double ATL_LNG = -84.3880;
+    final double ATL_LAT = 33.7490;
+    final float ZOOM = 11.0f;
 
-    SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
-    HashMap<Marker, Integer> markersToKeys; // There is no way to add the shelter key to a marker, so we need to use a HashMap
-    int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
-    int reservedBeds;
+    private SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
+    private HashMap<Marker, Integer> markersToKeys; // There is no way to add the shelter key to a marker, so we need to use a HashMap
+    private int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
+    private int reservedBeds;
 
-    boolean isAdvancedSearch;
-    String shelterNameFilter;
-    String genderFilter;
-    String ageRangeFilter;
+    private boolean isAdvancedSearch;
+    private String shelterNameFilter;
+    private String genderFilter;
+    private String ageRangeFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
         // Set view variables
-        toolbar = findViewById(R.id.mapsToolbar);
+        Toolbar toolbar = findViewById(R.id.mapsToolbar);
 
         // Set other variables
         markersToKeys = new HashMap<>();
@@ -94,7 +94,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
         // Add the shelter markers
         for(int i = 0; i < shelters.size(); i++) {
@@ -104,16 +103,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 continue;
             }
             LatLng shelterPosition = new LatLng(shelter.getLatitude(), shelter.getLongitude());
-            Marker marker = mMap.addMarker(new MarkerOptions().position(shelterPosition).title(shelter.getShelterName()));
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(shelterPosition).title(shelter.getShelterName()));
             markersToKeys.put(marker, shelter.getUniqueKey());
         }
 
         // Move the camera to Atlanta with zoom
-        LatLng atlantaPosition = new LatLng(33.7490, -84.3880);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlantaPosition, 11.0f));
+        LatLng atlantaPosition = new LatLng(ATL_LAT, ATL_LNG);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlantaPosition, ZOOM));
 
         // Set marker click listener (below) to handle marker clicks
-        mMap.setOnMarkerClickListener(new MarkerClickListener());
+        googleMap.setOnMarkerClickListener(new MarkerClickListener());
     }
 
     private class MarkerClickListener implements GoogleMap.OnMarkerClickListener {
@@ -163,7 +162,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onActivityResult(requestCode, resultCode, data);
 
         // We're coming back from the details activity after the user clicked reserve
-        if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
+        if((requestCode == 0) && (resultCode == Activity.RESULT_OK)) {
             setReservations(data);
         }
     }
@@ -222,10 +221,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 line = reader.readLine();
             }
             reader.close();
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
     }
 
-    private void populateArrayListFromStorage(Set<String> shelterStorageEntries) {
+    private void populateArrayListFromStorage(Iterable<String> shelterStorageEntries) {
         shelters = new SparseArray<>();
         for(String shelterStorageEntry : shelterStorageEntries) {
             Shelter shelter = Shelter.createFromStorageEntry(shelterStorageEntry);
@@ -235,10 +234,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private boolean matchesFilter(Shelter shelter) {
         // Return true if we're not searching, or if we match all three filters
-        if (!isAdvancedSearch) return true;
-        return matchesShelterName(shelter.getShelterName())
-                && matchesGender(shelter.getRestrictions())
-                && matchesAgeRange(shelter.getRestrictions());
+        return !isAdvancedSearch || (matchesShelterName(shelter.getShelterName()) && matchesGender(shelter.getRestrictions()) && matchesAgeRange(shelter.getRestrictions()));
     }
 
     private boolean matchesShelterName(String shelterName) {
@@ -246,7 +242,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private boolean matchesGender(String restrictions) {
-        return genderFilter.equals("Anyone") // Gender wasn't filtered
+        return "Anyone".equals(genderFilter) // Gender wasn't filtered
                 || hasUnspecifiedGender(restrictions) // Shelter has unspecified gender restriction
                 || restrictions.contains(genderFilter); // Shelter matches gender restriction
     }
@@ -262,7 +258,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private boolean matchesAgeRange(String restrictions) {
-        return ageRangeFilter.equals("Anyone") // Age range wasn't filtered
+        return "Anyone".equals(ageRangeFilter) // Age range wasn't filtered
                 || hasUnspecifiedAgeRange(restrictions) // Shelter has unspecified age range restriction
                 || restrictions.contains(ageRangeFilter);  // Shelter matches age range restriction
     }
