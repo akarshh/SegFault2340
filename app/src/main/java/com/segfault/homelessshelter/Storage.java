@@ -23,10 +23,8 @@ public final class Storage {
     public static Storage getInstance(Context context) {
         if(storage == null) {
             storage = new Storage(context);
-            return storage;
-        } else {
-            return storage;
         }
+        return storage;
     }
 
     // Save methods

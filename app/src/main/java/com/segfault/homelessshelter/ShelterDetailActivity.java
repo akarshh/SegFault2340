@@ -45,7 +45,8 @@ public class ShelterDetailActivity extends AppCompatActivity {
         boolean canReserve = extras.getBoolean("CANRESERVE", false);
 
         // Populate detail view with shelter's information
-        uniqueKeyTextView.setText(String.format(getString(R.string.unique_key_concat), shelter.getUniqueKey()));
+        uniqueKeyTextView.setText(String.format(getString(R.string.unique_key_concat),
+                                                shelter.getUniqueKey()));
         shelterNameTextView.setText(String.format("Name: %s", shelter.getShelterName()));
         capacityTextView.setText(String.format("Capacity: %s", shelter.getCapacity()));
         restrictionsTextView.setText(String.format("Restrictions: %s", shelter.getRestrictions()));
@@ -54,14 +55,16 @@ public class ShelterDetailActivity extends AppCompatActivity {
         addressTextView.setText(String.format("Address: %s", shelter.getAddress()));
         specialNotesTextView.setText(String.format("Special Notes: %s", shelter.getSpecialNotes()));
         phoneNumberTextView.setText(String.format("Phone Number: %s", shelter.getPhoneNumber()));
-        vacancyTextView.setText(String.format(getString(R.string.vacancy_concat), shelter.getVacancy()));
+        vacancyTextView.setText(String.format(getString(R.string.vacancy_concat),
+                                                shelter.getVacancy()));
 
         // Hide vacancy if capacity is incompatible (vacancy is -1)
         if(shelter.getVacancy() == -1) {
             vacancyTextView.setVisibility(View.INVISIBLE);
         }
 
-        // Hide reservation controls if capacity is incompatible (vacancy is -1) or if user can't reserve new beds
+        /* Hide reservation controls if capacity is incompatible (vacancy is -1) or if user can't
+        reserve new beds */
         if((shelter.getVacancy() == -1) || !canReserve) {
             minusReserveButton.setVisibility(View.INVISIBLE);
             plusReserveButton.setVisibility(View.INVISIBLE);
@@ -100,7 +103,8 @@ public class ShelterDetailActivity extends AppCompatActivity {
                     setResult(Activity.RESULT_OK, resultIntent);
                     finish();
                 } else {
-                    Toast toast = Toast.makeText(ShelterDetailActivity.this, "Please select a valid amount of beds!", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(ShelterDetailActivity.this,
+                            "Please select a valid amount of beds!", Toast.LENGTH_SHORT);
                     toast.show();
                 }
             }

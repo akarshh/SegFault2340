@@ -18,8 +18,9 @@ public final class Shelter implements Parcelable {
 
     // Constructors
 
-    private Shelter(int uniqueKey, String shelterName, String capacity, String restrictions, double longitude,
-                    double latitude, String address, String specialNotes, String phoneNumber) {
+    private Shelter(int uniqueKey, String shelterName, String capacity, String restrictions,
+                    double longitude, double latitude, String address, String specialNotes,
+                    String phoneNumber) {
         this.uniqueKey = uniqueKey;
         this.shelterName = shelterName;
         this.capacity = capacity;
@@ -61,7 +62,8 @@ public final class Shelter implements Parcelable {
         double latitude = getAndRemoveFirstDouble(csv);
         String address = getAndRemoveFirstString(csv);
         String specialNotes = getAndRemoveFirstString(csv);
-        // At this point all other fields have been removed, so we just need to cast to string and remove quotes just in case
+        /* At this point all other fields have been removed, so we just need to cast to string and
+        remove quotes just in case. */
         String phoneNumber = csv.toString();
         phoneNumber = phoneNumber.replace("\"", "");
         return new Shelter(uniqueKey, shelterName, capacity, restrictions, longitude, latitude,
@@ -71,7 +73,8 @@ public final class Shelter implements Parcelable {
     public static Shelter createFromStorageEntry(String storageEntry) {
         String[] fields = storageEntry.split("\\|"); // We need to escape "|" because of regex
         Shelter shelter = new Shelter(Integer.parseInt(fields[0]), fields[1], fields[2], fields[3],
-                Double.parseDouble(fields[4]), Double.parseDouble(fields[5]), fields[6], fields[7], fields[8]);
+                Double.parseDouble(fields[4]), Double.parseDouble(fields[5]), fields[6], fields[7],
+                                    fields[8]);
         shelter.vacancy = Integer.parseInt(fields[9]);
         return shelter;
     }
@@ -209,16 +212,18 @@ public final class Shelter implements Parcelable {
     // toEntry
 
     public String toEntry() {
-        return uniqueKey + "|" + shelterName + "|" + capacity + "|" + restrictions + "|" + longitude + "|" +
-                latitude + "|" + address + "|" + specialNotes + "|" + phoneNumber + "|" + vacancy;
+        return uniqueKey + "|" + shelterName + "|" + capacity + "|" + restrictions + "|" + longitude
+                + "|" + latitude + "|" + address + "|" + specialNotes + "|" + phoneNumber + "|"
+                + vacancy;
     }
 
     // toString
 
     @Override
     public String toString() {
-        return uniqueKey + " | " + shelterName + " | " + capacity + " | " + restrictions + " | " + longitude
-                + " | " + latitude + " | " + address + " | " + specialNotes + " | " + phoneNumber;
+        return uniqueKey + " | " + shelterName + " | " + capacity + " | " + restrictions + " | "
+                + longitude + " | " + latitude + " | " + address + " | " + specialNotes + " | "
+                + phoneNumber;
     }
 
     // Parcelable methods

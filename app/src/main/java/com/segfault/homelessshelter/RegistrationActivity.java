@@ -42,12 +42,16 @@ public class RegistrationActivity extends AppCompatActivity {
                 String adminKeyTextBoxString = adminKeyTextBoxEditable.toString();
                 if(adminCheckBox.isChecked() && !"tempkey".equals(adminKeyTextBoxString)) {
                     // User has selected admin, but has incorrect admin key
-                    Toast.makeText(RegistrationActivity.this, "Admin key is incorrect", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegistrationActivity.this, "Admin key is incorrect",
+                                    Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(!passwordEditText.getText().toString().equals(confirmPasswordEditText.getText().toString())) {
+                if(!passwordEditText.getText().toString()
+                                            .equals(confirmPasswordEditText.getText().toString())) {
                     // User's password and confirmation aren't matching
-                    Toast.makeText(RegistrationActivity.this, "Password and confirm password do not match", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegistrationActivity.this,
+                                    "Password and confirm password do not match",
+                                    Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // User is past all potential problems and has inputted correct information

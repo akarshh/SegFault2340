@@ -19,8 +19,10 @@ public class AdvancedSearchActivity extends AppCompatActivity {
     private Spinner genderSpinner;
     private Spinner ageRangeSpinner;
 
-    private final List<String> genders = Arrays.asList("Anyone", "Men", "Women", "Trans men", "Trans women");
-    private final List<String> ageRanges = Arrays.asList("Anyone", "Newborns", "Children", "Young adults");
+    private final List<String> genders = Arrays.asList("Anyone", "Men", "Women", "Trans men",
+                                                        "Trans women");
+    private final List<String> ageRanges = Arrays.asList("Anyone", "Newborns", "Children",
+                                                        "Young adults");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +36,14 @@ public class AdvancedSearchActivity extends AppCompatActivity {
         Button searchButton = findViewById(R.id.advancedSearchButton);
 
         // Populate gender spinner
-        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genders);
+        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this,
+                                                    android.R.layout.simple_spinner_item, genders);
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genderSpinner.setAdapter(genderAdapter);
 
         // Populate age range spinner
-        ArrayAdapter<String> ageRangeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ageRanges);
+        ArrayAdapter<String> ageRangeAdapter = new ArrayAdapter<>(this,
+                                                android.R.layout.simple_spinner_item, ageRanges);
         ageRangeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ageRangeSpinner.setAdapter(ageRangeAdapter);
 
@@ -51,9 +55,11 @@ public class AdvancedSearchActivity extends AppCompatActivity {
                 Bundle extras = intent.getExtras();
                 String origin = extras.getString("ORIGIN", "ShelterListActivity");
                 if("ShelterListActivity".equals(origin)) {
-                    intent = new Intent(AdvancedSearchActivity.this, ShelterListActivity.class);
+                    intent = new Intent(AdvancedSearchActivity.this,
+                                        ShelterListActivity.class);
                 } else {
-                    intent = new Intent(AdvancedSearchActivity.this, MapsActivity.class);
+                    intent = new Intent(AdvancedSearchActivity.this,
+                                        MapsActivity.class);
                 }
                 Editable nameEditTextText = nameEditText.getText();
                 intent.putExtra("SHELTERNAME", nameEditTextText.toString());

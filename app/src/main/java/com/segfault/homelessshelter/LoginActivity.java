@@ -57,7 +57,8 @@ public class LoginActivity extends AppCompatActivity {
                 if(users.containsKey(email) && userPassword.equals(password)) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
-                    Toast.makeText(LoginActivity.this, "Incorrect email / password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Incorrect email / password",
+                                    Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -66,7 +67,8 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(LoginActivity.this, RegistrationActivity.class), 0);
+                startActivityForResult(new Intent(LoginActivity.this,
+                                                    RegistrationActivity.class), 0);
             }
         });
     }
@@ -79,8 +81,10 @@ public class LoginActivity extends AppCompatActivity {
         if((requestCode == 0) && (resultCode == Activity.RESULT_OK)) {
             String email = data.getStringExtra("EMAIL");
             if(users.containsKey(email)) {
-                // An account with this email already exists, so tell the user and don't create a new account
-                Toast.makeText(LoginActivity.this, "An account with this email already exists", Toast.LENGTH_SHORT).show();
+                /* An account with this email already exists, so tell the user and don't create
+                a new account */
+                Toast.makeText(LoginActivity.this,
+                        "An account with this email already exists", Toast.LENGTH_SHORT).show();
                 return;
             }
             String name = data.getStringExtra("NAME");

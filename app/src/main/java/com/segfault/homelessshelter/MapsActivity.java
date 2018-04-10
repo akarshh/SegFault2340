@@ -32,7 +32,7 @@ import java.util.Set;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
-    private HashMap<Marker, Integer> markersToKeys; // There is no way to add the shelter key to a marker, so we need to use a HashMap
+    private HashMap<Marker, Integer> markersToKeys; // HashMap to associate Shelter keys and markers
     private int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
     private int reservedBeds;
 
@@ -99,15 +99,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 continue;
             }
             LatLng shelterPosition = new LatLng(shelter.getLatitude(), shelter.getLongitude());
-            Marker marker = googleMap.addMarker(new MarkerOptions().position(shelterPosition).title(shelter.getShelterName()));
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(shelterPosition)
+                                                                .title(shelter.getShelterName()));
             markersToKeys.put(marker, shelter.getUniqueKey());
         }
 
         // Move the camera to Atlanta with zoom
-        double ATL_LAT = 33.7490;
-        double ATL_LNG = -84.3880;
+        final double ATL_LAT = 33.7490;
+        final double ATL_LNG = -84.3880;
         LatLng atlantaPosition = new LatLng(ATL_LAT, ATL_LNG);
-        float ZOOM = 11.0f;
+        final float ZOOM = 11.0f;
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlantaPosition, ZOOM));
 
         // Set marker click listener (below) to handle marker clicks
@@ -175,7 +176,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             uniqueKeyOfReservedBeds = -1;
             reservedBeds = 0;
             Context context = getApplicationContext();
-            Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
+            Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds",
+                                                    uniqueKeyOfReservedBeds);
             Storage.getInstance(context).saveInt("reservedBeds", reservedBeds);
             saveShelters();
         }
@@ -233,7 +235,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private boolean matchesFilter(Shelter shelter) {
         // Return true if we're not searching, or if we match all three filters
-        return !isAdvancedSearch || (matchesShelterName(shelter.getShelterName()) && matchesGender(shelter.getRestrictions()) && matchesAgeRange(shelter.getRestrictions()));
+        return !isAdvancedSearch || (matchesShelterName(shelter.getShelterName())
+                                        && matchesGender(shelter.getRestrictions())
+                                        && matchesAgeRange(shelter.getRestrictions()));
     }
 
     private boolean matchesShelterName(String shelterName) {
@@ -258,8 +262,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private boolean matchesAgeRange(String restrictions) {
         return "Anyone".equals(ageRangeFilter) // Age range wasn't filtered
-                || hasUnspecifiedAgeRange(restrictions) // Shelter has unspecified age range restriction
-                || restrictions.contains(ageRangeFilter);  // Shelter matches age range restriction
+                || hasUnspecifiedAgeRange(restrictions) // Shelter has unspecified restriction
+                || restrictions.contains(ageRangeFilter);  // Shelter matches restriction
     }
 
     private boolean hasUnspecifiedAgeRange(String restrictions) {

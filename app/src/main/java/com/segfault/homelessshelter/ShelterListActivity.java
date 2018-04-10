@@ -79,13 +79,14 @@ public class ShelterListActivity extends AppCompatActivity {
             // Passed filters, if any, so add to view
             TextView shelterNameTextView = new TextView(this);
             shelterNameTextView.setText(shelter.getShelterName());
-            int FONT_SIZE = 20;
+            final int FONT_SIZE = 20;
             shelterNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE);
             // Define behaviour for going to shelter detail view after clicking shelter
             shelterNameTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(ShelterListActivity.this, ShelterDetailActivity.class);
+                    Intent intent = new Intent(ShelterListActivity.this,
+                                                ShelterDetailActivity.class);
                     intent.putExtra("SHELTER", shelter);
                     intent.putExtra("CANRESERVE", uniqueKeyOfReservedBeds == -1);
                     startActivityForResult(intent, 0);
@@ -206,7 +207,9 @@ public class ShelterListActivity extends AppCompatActivity {
 
     private boolean matchesFilter(Shelter shelter) {
         // Return true if we're not searching, or if we match all three filters
-        return !isAdvancedSearch || (matchesShelterName(shelter.getShelterName()) && matchesGender(shelter.getRestrictions()) && matchesAgeRange(shelter.getRestrictions()));
+        return !isAdvancedSearch || (matchesShelterName(shelter.getShelterName())
+                                        && matchesGender(shelter.getRestrictions())
+                                        && matchesAgeRange(shelter.getRestrictions()));
     }
 
     private boolean matchesShelterName(String shelterName) {
@@ -232,8 +235,8 @@ public class ShelterListActivity extends AppCompatActivity {
 
     private boolean matchesAgeRange(String restrictions) {
         return "Anyone".equals(ageRangeFilter) // Age range wasn't filtered
-                || hasUnspecifiedAgeRange(restrictions) // Shelter has unspecified age range restriction
-                || restrictions.contains(ageRangeFilter);  // Shelter matches age range restriction
+                || hasUnspecifiedAgeRange(restrictions) // Shelter has unspecified restriction
+                || restrictions.contains(ageRangeFilter);  // Shelter matches restriction
     }
 
     private boolean hasUnspecifiedAgeRange(String restrictions) {
