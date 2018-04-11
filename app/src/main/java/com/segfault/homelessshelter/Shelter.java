@@ -3,22 +3,24 @@ package com.segfault.homelessshelter;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public final class Shelter implements Parcelable {
 
-    private final int uniqueKey;
-    private final String shelterName;
-    private final String capacity; // Sometimes this can be a string
-    private final String restrictions;
-    private final double longitude;
-    private final double latitude;
-    private final String address;
-    private final String specialNotes;
-    private final String phoneNumber;
+    private int uniqueKey;
+    private String shelterName;
+    private String capacity; // Sometimes this can be a string
+    private String restrictions;
+    private double longitude;
+    private double latitude;
+    private String address;
+    private String specialNotes;
+    private String phoneNumber;
     private int vacancy;
 
     // Constructors
 
-    private Shelter(int uniqueKey, String shelterName, String capacity, String restrictions, double longitude,
+    public Shelter(int uniqueKey, String shelterName, String capacity, String restrictions, double longitude,
                     double latitude, String address, String specialNotes, String phoneNumber) {
         this.uniqueKey = uniqueKey;
         this.shelterName = shelterName;
@@ -34,6 +36,10 @@ public final class Shelter implements Parcelable {
         } catch (Exception e) {
             this.vacancy = -1;
         }
+    }
+
+    public Shelter() {
+        this(-1, null, null, null, 0.0, 0.0, null, null, null);
     }
 
     private Shelter(Parcel in) {
@@ -69,10 +75,42 @@ public final class Shelter implements Parcelable {
     }
 
     public static Shelter createFromStorageEntry(String storageEntry) {
-        String[] fields = storageEntry.split("\\|"); // We need to escape "|" because of regex
-        Shelter shelter = new Shelter(Integer.parseInt(fields[0]), fields[1], fields[2], fields[3],
-                Double.parseDouble(fields[4]), Double.parseDouble(fields[5]), fields[6], fields[7], fields[8]);
-        shelter.vacancy = Integer.parseInt(fields[9]);
+        Shelter shelter = new Shelter();
+        String[] fields = storageEntry.split("\\|"); // We need to escape "|" like this because of regex
+        for(int i = 0; i <= 9; i++) {
+            switch(i) {
+                case 0:
+                    shelter.setUniqueKey(Integer.parseInt(fields[i]));
+                    break;
+                case 1:
+                    shelter.setShelterName(fields[i]);
+                    break;
+                case 2:
+                    shelter.setCapacity(fields[i]);
+                    break;
+                case 3:
+                    shelter.setRestrictions(fields[i]);
+                    break;
+                case 4:
+                    shelter.setLongitude(Double.parseDouble(fields[i]));
+                    break;
+                case 5:
+                    shelter.setLatitude(Double.parseDouble(fields[i]));
+                    break;
+                case 6:
+                    shelter.setAddress(fields[i]);
+                    break;
+                case 7:
+                    shelter.setSpecialNotes(fields[i]);
+                    break;
+                case 8:
+                    shelter.setPhoneNumber(fields[i]);
+                    break;
+                case 9:
+                    shelter.setVacancy(Integer.parseInt(fields[i]));
+                    break;
+            }
+        }
         return shelter;
     }
 
@@ -120,65 +158,47 @@ public final class Shelter implements Parcelable {
 
     // Setters
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setUniqueKey(int uniqueKey) {
-//        this.uniqueKey = uniqueKey;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setUniqueKey(int uniqueKey) {
+        this.uniqueKey = uniqueKey;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setShelterName(String shelterName) {
-//        this.shelterName = shelterName;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setShelterName(String shelterName) {
+        this.shelterName = shelterName;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setCapacity(String capacity) {
-//        this.capacity = capacity;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setCapacity(String capacity) {
+        this.capacity = capacity;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setRestrictions(String restrictions) {
-//        this.restrictions = restrictions;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setRestrictions(String restrictions) {
+        this.restrictions = restrictions;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setLongitude(double longitude) {
-//        this.longitude = longitude;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setLatitude(double latitude) {
-//        this.latitude = latitude;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setAddress(String address) {
-//        this.address = address;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setSpecialNotes(String specialNotes) {
-//        this.specialNotes = specialNotes;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setSpecialNotes(String specialNotes) {
+        this.specialNotes = specialNotes;
+    }
 
-// --Commented out by Inspection START (4/9/18 11:31 PM):
-//    public void setPhoneNumber(String phoneNumber) {
-//        this.phoneNumber = phoneNumber;
-//    }
-// --Commented out by Inspection STOP (4/9/18 11:31 PM)
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     public void setVacancy(int vacancy) {
         this.vacancy = vacancy;
     }
 
-    // Helpers
+    // Private helpers
 
     private static int getAndRemoveFirstInt(StringBuilder csv) {
         int field = Integer.parseInt(csv.substring(0, csv.indexOf(",")));
@@ -206,19 +226,115 @@ public final class Shelter implements Parcelable {
         return field;
     }
 
-    // toEntry
+    // Public helpers
 
     public String toEntry() {
-        return uniqueKey + "|" + shelterName + "|" + capacity + "|" + restrictions + "|" + longitude + "|" +
-                latitude + "|" + address + "|" + specialNotes + "|" + phoneNumber + "|" + vacancy;
+        String[] fields = {
+                String.valueOf(uniqueKey),
+                shelterName,
+                capacity,
+                restrictions,
+                String.valueOf(longitude),
+                String.valueOf(latitude),
+                address,
+                specialNotes,
+                phoneNumber,
+                String.valueOf(vacancy)
+        };
+        StringBuilder entryBuilder = new StringBuilder();
+        for(String field : fields) {
+            entryBuilder.append(field);
+            entryBuilder.append("|");
+        }
+        entryBuilder.setLength(entryBuilder.length() - 1); // Remove the last "|"
+        return entryBuilder.toString();
     }
 
-    // toString
+    // Filtering related helpers
+
+    public boolean matchesFilter(String nameFilter, String genderFilter, String ageFilter) {
+        // Return true if we're not searching, or if we match all three filters
+        return matchesShelterName(nameFilter) && matchesGender(genderFilter) && matchesAgeRange(ageFilter);
+    }
+
+    private boolean matchesShelterName(String nameFilter) {
+        String lowerCaseShelterName = shelterName.toLowerCase();
+        return lowerCaseShelterName.contains(nameFilter.toLowerCase());
+    }
+
+    private boolean matchesGender(String genderFilter) {
+        return "Anyone".equals(genderFilter) // Gender wasn't filtered
+                || hasUnspecifiedGender() // Shelter has unspecified gender restriction
+                || restrictions.contains(genderFilter); // Shelter matches gender restriction
+    }
+
+    private boolean hasUnspecifiedGender() {
+        String[] genders = {"Men", "Women", "Trans men", "Trans women"};
+        for(String gender : genders) {
+            if(restrictions.contains(gender)) {
+                return false; // Restriction specifies some gender
+            }
+        }
+        return true; // Restriction didn't specify any gender
+    }
+
+    private boolean matchesAgeRange(String ageFilter) {
+        return "Anyone".equals(ageFilter) // Age range wasn't filtered
+                || hasUnspecifiedAgeRange() // Shelter has unspecified age range restriction
+                || restrictions.contains(ageFilter);  // Shelter matches age range restriction
+    }
+
+    private boolean hasUnspecifiedAgeRange() {
+        String[] ageRanges = {"Newborns", "Children", "Young adults"};
+        for(String ageRange : ageRanges) {
+            if(restrictions.contains(ageRange)) {
+                return false; // Restriction specifies some age range
+            }
+        }
+        return true; // Restriction didn't specify any age range
+    }
+
+    // Object overrides
 
     @Override
     public String toString() {
-        return uniqueKey + " | " + shelterName + " | " + capacity + " | " + restrictions + " | " + longitude
-                + " | " + latitude + " | " + address + " | " + specialNotes + " | " + phoneNumber;
+        String[] fields = {
+                String.valueOf(uniqueKey),
+                shelterName,
+                capacity,
+                restrictions,
+                String.valueOf(longitude),
+                String.valueOf(latitude),
+                address,
+                specialNotes,
+                phoneNumber,
+                String.valueOf(vacancy)
+        };
+        StringBuilder stringBuilder = new StringBuilder();
+        for(String field : fields) {
+            stringBuilder.append(field);
+            stringBuilder.append(", ");
+        }
+        stringBuilder.setLength(stringBuilder.length() - 2); // Remove the last ", "
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        // Auto-generated equals() by Android Studio
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Shelter shelter = (Shelter) o;
+        return uniqueKey == shelter.uniqueKey &&
+                Double.compare(shelter.longitude, longitude) == 0 &&
+                Double.compare(shelter.latitude, latitude) == 0 &&
+                vacancy == shelter.vacancy &&
+                shelterName.equals(shelter.shelterName) &&
+                capacity.equals(shelter.capacity) &&
+                restrictions.equals(shelter.restrictions) &&
+                address.equals(shelter.address) &&
+                specialNotes.equals(shelter.specialNotes) &&
+                phoneNumber.equals(shelter.phoneNumber);
     }
 
     // Parcelable methods
