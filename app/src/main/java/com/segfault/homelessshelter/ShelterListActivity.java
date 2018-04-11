@@ -30,9 +30,9 @@ public class ShelterListActivity extends AppCompatActivity {
     private int reservedBeds;
 
     private boolean isAdvancedSearch;
-    private String shelterNameFilter;
+    private String nameFilter;
     private String genderFilter;
-    private String ageRangeFilter;
+    private String ageFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +53,9 @@ public class ShelterListActivity extends AppCompatActivity {
         if(extras != null) {
             // If extras != null, we came from advanced search
             isAdvancedSearch = true;
-            shelterNameFilter = extras.getString("SHELTERNAME");
+            nameFilter = extras.getString("SHELTERNAME");
             genderFilter = extras.getString("GENDER");
-            ageRangeFilter = extras.getString("AGERANGE");
+            ageFilter = extras.getString("AGERANGE");
         }
 
         // Set the toolbar
@@ -73,7 +73,7 @@ public class ShelterListActivity extends AppCompatActivity {
         for(int i = 0; i < shelters.size(); i++) {
             final Shelter shelter = shelters.get(i);
             // Check filters first
-            if(!matchesFilter(shelter)) {
+            if(isAdvancedSearch && !shelter.matchesFilter(nameFilter, genderFilter, ageFilter)) {
                 continue;
             }
             // Passed filters, if any, so add to view
@@ -203,49 +203,5 @@ public class ShelterListActivity extends AppCompatActivity {
             Shelter shelter = Shelter.createFromStorageEntry(shelterStorageEntry);
             shelters.put(shelter.getUniqueKey(), shelter);
         }
-    }
-
-    private boolean matchesFilter(Shelter shelter) {
-        // Return true if we're not searching, or if we match all three filters
-        return !isAdvancedSearch || (matchesShelterName(shelter.getShelterName())
-                                        && matchesGender(shelter.getRestrictions())
-                                        && matchesAgeRange(shelter.getRestrictions()));
-    }
-
-    private boolean matchesShelterName(String shelterName) {
-        String lowerCaseShelterName = shelterName.toLowerCase();
-        return lowerCaseShelterName.contains(shelterNameFilter.toLowerCase());
-    }
-
-    private boolean matchesGender(String restrictions) {
-        return "Anyone".equals(genderFilter) // Gender wasn't filtered
-                || hasUnspecifiedGender(restrictions) // Shelter has unspecified gender restriction
-                || restrictions.contains(genderFilter); // Shelter matches gender restriction
-    }
-
-    private boolean hasUnspecifiedGender(String restrictions) {
-        String[] genders = {"Men", "Women", "Trans men", "Trans women"};
-        for(String gender : genders) {
-            if(restrictions.contains(gender)) {
-                return false; // Restriction specifies some gender
-            }
-        }
-        return true; // Restriction didn't specify any gender
-    }
-
-    private boolean matchesAgeRange(String restrictions) {
-        return "Anyone".equals(ageRangeFilter) // Age range wasn't filtered
-                || hasUnspecifiedAgeRange(restrictions) // Shelter has unspecified restriction
-                || restrictions.contains(ageRangeFilter);  // Shelter matches restriction
-    }
-
-    private boolean hasUnspecifiedAgeRange(String restrictions) {
-        String[] ageRanges = {"Newborns", "Children", "Young adults"};
-        for(String ageRange : ageRanges) {
-            if(restrictions.contains(ageRange)) {
-                return false; // Restriction specifies some age range
-            }
-        }
-        return true; // Restriction didn't specify any age range
     }
 }
