@@ -7,7 +7,7 @@ public class AkarshUnitTest {
     private String[] entries = {
             "test1|test1@gmail.com|12345678|false",
             "test2|test2@gmail.com|abcdefgh|true",
-            "test3|test3@gmail.com|abcdefgh|false",
+            "test3|test3|abcdefgh|false",
             "test4|test4|12345678|true",
             "test1|test1@gmail.com|12345678|false",
             "test2|test2@gmail.com|abcdefgh|true",
@@ -20,11 +20,11 @@ public class AkarshUnitTest {
             new User("test1", "test1@gmail.com", "12345678", false),
             new User("test2", "test2@gmail.com", "abcdefgh", true),
             new User("test3", "test3", "abcdefgh", false),
-            new User("test4", "test4", "123456789", true),
+            new User("test4", "test4", "12345678", true),
             new User("test1", "test1@gmail.com", "12345678", false),
             new User("test2", "test2@gmail.com", "abcdefgh", true),
             new User("test3", "test3", "abcdefgh", false),
-            new User("test4", "test4", "123456789", true)
+            new User("test4", "test4", "12345678", true)
     };
 
     // Empty array to be filled with newly created Users using createFromStorageEntry()
