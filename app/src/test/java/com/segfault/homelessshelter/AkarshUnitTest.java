@@ -1,38 +1,41 @@
 package com.segfault.homelessshelter;
-
 import org.junit.Test;
-
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 public class AkarshUnitTest {
-
-    // These are the database entries
-     private Shelter[] shelters = {
-        new Shelter(0, "My Sister's House", "264", "Women/Children", -84.410142, 33.780174, "921 Howell Mill Road, Atlanta, Georgia 30318", "Temporary, Emergency, Residential Recovery", "(404) 367-2465"),
-        new Shelter(1, "The Shepherd's Inn", "450", "Men", -84.39265, 33.765162, "156 Mills Street, Atlanta, Georgia 30313", "Temporary, Residential Recovery", "(404) 367-2493"),
-        new Shelter(2, "Fuqua Hall", "92", "Men", -84.392273, 33.76515, "144 Mills Street, Atlanta, Georgia 30313", "Transitional housing", "(404) 367-2492"),
-        new Shelter(3, "Eden Village ", "32 for families, 80 singles", "Women/Children", -84.43023, 33.762316, "1300 Joseph E. Boone Blvd NW, Atlanta, GA 30314", "General recovery services", "(404)-874-2241"),
-    };
-     private String[][] entries = {
-            {"My Sister's House", "Women", "Anyone"},
-            {"The Shepherd's Inn", "Anyone", "Children"},
-            {"Fuqua Hall.", "Men", "Anyone"},
-            {"Eden Village", "Men", "Children"}
+    // Storage entries
+    private String[] entries = {
+            "test1|test1@gmail.com|12345678|false",
+            "test2|test2@gmail.com|abcdefgh|true",
+            "test3|test3@gmail.com|abcdefgh|false",
+            "test4|test4|12345678|true",
+            "test1|test1@gmail.com|12345678|false",
+            "test2|test2@gmail.com|abcdefgh|true",
+            "test3|test3|abcdefgh|false",
+            "test4|test4|12345678|true"
     };
 
-    // This is what we expect to obtain
-    private Boolean[] expected = {
-        true, false, true, false
+    // Expected Users
+    private User[] expected = {
+            new User("test1", "test1@gmail.com", "12345678", false),
+            new User("test2", "test2@gmail.com", "abcdefgh", true),
+            new User("test3", "test3", "abcdefgh", false),
+            new User("test4", "test4", "123456789", true),
+            new User("test1", "test1@gmail.com", "12345678", false),
+            new User("test2", "test2@gmail.com", "abcdefgh", true),
+            new User("test3", "test3", "abcdefgh", false),
+            new User("test4", "test4", "123456789", true)
     };
 
-    private Boolean[] actual = new Boolean[4];
+    // Empty array to be filled with newly created Users using createFromStorageEntry()
+    private User[] actual = new User[8];
 
     @Test
-    public void testMatchesGender() {
+    public void createFromStorageEntry() throws Exception {
+
         for(int i = 0; i < actual.length; i++) {
-            actual[i] = shelters[i].matchesGender(entries[i][1]);
+            actual[i] = User.createFromStorageEntry(entries[i]);
         }
         assertArrayEquals(expected, actual);
     }
-
 }

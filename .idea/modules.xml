@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SegFault2340.iml" filepath="$PROJECT_DIR$/SegFault2340.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/SegFault2340.iml" filepath="$PROJECT_DIR$/.idea/SegFault2340.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
