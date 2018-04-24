@@ -54,7 +54,7 @@ public final class Shelter implements Parcelable {
         vacancy = in.readInt();
     }
 
-    // Static factories
+    // Static factory methods
 
     public static Shelter createFromCSVEntry(String csvEntry) {
         StringBuilder csv = new StringBuilder(csvEntry);
@@ -75,42 +75,10 @@ public final class Shelter implements Parcelable {
     }
 
     public static Shelter createFromStorageEntry(String storageEntry) {
-        Shelter shelter = new Shelter();
-        String[] fields = storageEntry.split("\\|"); // We need to escape "|" like this because of regex
-        for(int i = 0; i <= 9; i++) {
-            switch(i) {
-                case 0:
-                    shelter.setUniqueKey(Integer.parseInt(fields[i]));
-                    break;
-                case 1:
-                    shelter.setShelterName(fields[i]);
-                    break;
-                case 2:
-                    shelter.setCapacity(fields[i]);
-                    break;
-                case 3:
-                    shelter.setRestrictions(fields[i]);
-                    break;
-                case 4:
-                    shelter.setLongitude(Double.parseDouble(fields[i]));
-                    break;
-                case 5:
-                    shelter.setLatitude(Double.parseDouble(fields[i]));
-                    break;
-                case 6:
-                    shelter.setAddress(fields[i]);
-                    break;
-                case 7:
-                    shelter.setSpecialNotes(fields[i]);
-                    break;
-                case 8:
-                    shelter.setPhoneNumber(fields[i]);
-                    break;
-                case 9:
-                    shelter.setVacancy(Integer.parseInt(fields[i]));
-                    break;
-            }
-        }
+        String[] fields = storageEntry.split("\\|"); // We need to escape "|" because of regex
+        Shelter shelter = new Shelter(Integer.parseInt(fields[0]), fields[1], fields[2], fields[3],
+                Double.parseDouble(fields[4]), Double.parseDouble(fields[5]), fields[6], fields[7], fields[8]);
+        shelter.vacancy = Integer.parseInt(fields[9]);
         return shelter;
     }
 
@@ -229,31 +197,17 @@ public final class Shelter implements Parcelable {
     // Public helpers
 
     public String toEntry() {
-        String[] fields = {
-                String.valueOf(uniqueKey),
-                shelterName,
-                capacity,
-                restrictions,
-                String.valueOf(longitude),
-                String.valueOf(latitude),
-                address,
-                specialNotes,
-                phoneNumber,
-                String.valueOf(vacancy)
-        };
-        StringBuilder entryBuilder = new StringBuilder();
-        for(String field : fields) {
-            entryBuilder.append(field);
-            entryBuilder.append("|");
-        }
-        entryBuilder.setLength(entryBuilder.length() - 1); // Remove the last "|"
-        return entryBuilder.toString();
+        return uniqueKey + "|" + shelterName + "|" + capacity + "|" + restrictions + "|" + longitude
+                + "|" + latitude + "|" + address + "|" + specialNotes + "|" + phoneNumber + "|" +
+                vacancy;
     }
 
     public boolean matchesFilter(String nameFilter, String genderFilter, String ageFilter) {
         // Return true if we're not searching, or if we match all three filters
         return matchesShelterName(nameFilter) && matchesGender(genderFilter) && matchesAgeRange(ageFilter);
     }
+
+    // Private helpers
 
     private boolean matchesShelterName(String nameFilter) {
         String lowerCaseShelterName = shelterName.toLowerCase();
