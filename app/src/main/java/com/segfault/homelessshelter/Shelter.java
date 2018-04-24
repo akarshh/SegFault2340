@@ -3,7 +3,8 @@ package com.segfault.homelessshelter;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public final class Shelter implements Parcelable {
+public final
+class Shelter implements Parcelable {
 
     private int uniqueKey;
     private String shelterName;
