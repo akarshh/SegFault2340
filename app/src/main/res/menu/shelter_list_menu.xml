@@ -8,14 +8,19 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/search"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_cancel"
         android:icon="@drawable/ic_cancel_black_24dp"
         android:title="@string/cancel"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/search"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/action_log"
+        android:title="Log"
+        app:showAsAction="never"/>
 </menu>

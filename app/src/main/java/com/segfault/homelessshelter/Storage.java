@@ -12,7 +12,6 @@ import java.util.Set;
 public final class Storage {
 
     private static Storage storage;
-
     private final SharedPreferences preferences;
 
     private Storage(Context context) {
@@ -29,22 +28,40 @@ public final class Storage {
 
     // Save methods
 
-    public void saveInt(String key, int integer) {
+    public void saveInt(String key, int toSave) {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(key, integer);
+        editor.putInt(key, toSave);
         editor.apply();
     }
 
-    public void saveStringSet(String key, Set<String> set) {
+    public void saveLong(String key, long toSave) {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putStringSet(key, set);
+        editor.putLong(key, toSave);
+        editor.apply();
+    }
+
+    public void saveStringSet(String key, Set<String> toSave) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putStringSet(key, toSave);
         editor.apply();
     }
 
     // Load methods
 
     public int loadInt(String key) {
-        return preferences.getInt(key, -1);
+        return loadInt(key, -1);
+    }
+
+    public int loadInt(String key, int defaultValue) {
+        return preferences.getInt(key, defaultValue);
+    }
+
+    public long loadLong(String key) {
+        return loadLong(key, -1);
+    }
+
+    public long loadLong(String key, long defaultValue) {
+        return preferences.getLong(key, defaultValue);
     }
 
     public Set<String> loadStringSet(String key) {

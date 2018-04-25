@@ -1,7 +1,5 @@
 package com.segfault.homelessshelter;
 
-import java.util.Objects;
-
 public interface User {
 
     String name = null;

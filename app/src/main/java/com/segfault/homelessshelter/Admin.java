@@ -55,7 +55,7 @@ public class Admin implements User {
 
     @Override
     public String toString() {
-        return name + " | " + email + " | " + password + " | false";
+        return name + " | " + email + " | " + password + " | true";
     }
 
     @Override

@@ -122,6 +122,9 @@ public class ShelterListActivity extends AppCompatActivity {
             case R.id.action_map:
                 startActivity(new Intent(this, MapsActivity.class));
                 return true;
+            case R.id.action_log:
+                startActivity(new Intent(this, LogActivity.class));
+                return true;
         }
         return false;
     }

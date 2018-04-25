@@ -20,4 +20,5 @@
     <string name="search">Search</string>
     <string name="unique_key_concat">Unique Key: %d</string>
     <string name="vacancy_concat">Vacancy: %d</string>
+    <string name="request_closest">Request Closest</string>
 </resources>

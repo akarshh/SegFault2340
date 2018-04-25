@@ -1,9 +1,15 @@
 package com.segfault.homelessshelter;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
@@ -14,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,6 +40,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private SparseArray<Shelter> shelters; // Android HashMap that uses ints as keys
     private HashMap<Marker, Integer> markersToKeys; // HashMap to associate Shelter keys and markers
+    private Storage storage;
+    private GoogleMap gMap;
+
     private int uniqueKeyOfReservedBeds = -1; // Unique key of the shelter the user has claimed beds
     private int reservedBeds;
 
@@ -54,11 +64,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Set view variables
         Toolbar toolbar = findViewById(R.id.mapsToolbar);
 
+        // Get Storage instance
+        Context context = getApplicationContext();
+        storage = Storage.getInstance(context);
+
         // Set other variables
         markersToKeys = new HashMap<>();
-        Context context = getApplicationContext();
-        uniqueKeyOfReservedBeds = Storage.getInstance(context).loadInt("uniqueKeyOfReservedBeds");
-        reservedBeds = Storage.getInstance(context).loadInt("reservedBeds");
+        uniqueKeyOfReservedBeds = storage.loadInt("uniqueKeyOfReservedBeds");
+        reservedBeds = storage.loadInt("reservedBeds");
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             isAdvancedSearch = true;
@@ -69,14 +82,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Set the toolbar
         setSupportActionBar(toolbar);
-
-        // Populate shelter ArrayList either from CSV file or storage
-        Set<String> shelterStorageEntries = Storage.getInstance(context).loadStringSet("shelters");
-        if(shelterStorageEntries.isEmpty()) {
-            populateArrayListFromCSV();
-        } else {
-            populateArrayListFromStorage(shelterStorageEntries);
-        }
     }
 
 
@@ -89,7 +94,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap gMap) {
+        this.gMap = gMap;
+
+        // Populate shelter ArrayList either from CSV file or storage
+        Set<String> shelterStorageEntries = storage.loadStringSet("shelters");
+        if(shelterStorageEntries.isEmpty()) {
+            populateArrayListFromCSV();
+        } else {
+            populateArrayListFromStorage(shelterStorageEntries);
+        }
 
         // Add the shelter markers
         for(int i = 0; i < shelters.size(); i++) {
@@ -98,33 +112,45 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(isAdvancedSearch && !shelter.matchesFilter(nameFilter, genderFilter, ageFilter)) {
                 continue;
             }
-            LatLng shelterPosition = new LatLng(shelter.getLatitude(), shelter.getLongitude());
-            Marker marker = googleMap.addMarker(new MarkerOptions().position(shelterPosition)
-                                                                .title(shelter.getShelterName()));
+            LatLng shelterLatLng = new LatLng(shelter.getLatitude(), shelter.getLongitude());
+            Marker marker = gMap.addMarker(new MarkerOptions().position(shelterLatLng));
             markersToKeys.put(marker, shelter.getUniqueKey());
         }
+
+        // Set padding of toolbar
+        gMap.setPadding(0, 150, 0, 0);
+
+        // Check if we have location permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // If so enable location on map
+            gMap.setMyLocationEnabled(true);
+        } else {
+            // If not ask for permissions
+            ActivityCompat.requestPermissions(MapsActivity.this,
+                    new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+        }
+
+        // Enable zoom controls
+        UiSettings uiSettings = gMap.getUiSettings();
+        uiSettings.setZoomControlsEnabled(true);
 
         // Move the camera to Atlanta with zoom
         final double ATL_LAT = 33.7490;
         final double ATL_LNG = -84.3880;
         LatLng atlantaPosition = new LatLng(ATL_LAT, ATL_LNG);
         final float ZOOM = 11.0f;
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlantaPosition, ZOOM));
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlantaPosition, ZOOM));
 
         // Set marker click listener (below) to handle marker clicks
-        googleMap.setOnMarkerClickListener(new MarkerClickListener());
+        gMap.setOnMarkerClickListener(new MarkerClickListener());
     }
 
-    private class MarkerClickListener implements GoogleMap.OnMarkerClickListener {
-
-        @Override
-        public boolean onMarkerClick(Marker marker) {
-            Shelter shelter = shelters.get(markersToKeys.get(marker));
-            Intent intent = new Intent(MapsActivity.this, ShelterDetailActivity.class);
-            intent.putExtra("SHELTER", shelter);
-            intent.putExtra("CANRESERVE", uniqueKeyOfReservedBeds == -1);
-            startActivityForResult(intent, 0);
-            return true;
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            gMap.setMyLocationEnabled(true);
         }
     }
 
@@ -139,10 +165,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch(item.getItemId()) {
             case R.id.action_search:
                 // User has clicked the search toolbar button
-                Intent intent = new Intent(this, AdvancedSearchActivity.class);
+                intent = new Intent(this, AdvancedSearchActivity.class);
                 intent.putExtra("ORIGIN", "MapsActivity");
                 startActivity(intent);
                 return true;
@@ -152,6 +179,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             case R.id.action_list:
                 finish();
+                return true;
+            case R.id.action_auto_request:
+                if(!gMap.isMyLocationEnabled()) {
+                    return false;
+                }
+                Location myLocation = gMap.getMyLocation();
+                LatLng myLatLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+                Shelter closestShelter = shelters.get(0);
+                float closestDistance = Float.MAX_VALUE;
+                for(int i = 0; i < shelters.size(); i++) {
+                    Shelter shelter = shelters.get(i);
+                    LatLng shelterLatLng = new LatLng(shelter.getLatitude(), shelter.getLongitude());
+                    if(distance(myLatLng, shelterLatLng) < closestDistance) {
+                        closestShelter = shelter;
+                        closestDistance = distance(myLatLng, shelterLatLng);
+                    }
+                }
+                intent = new Intent(MapsActivity.this, ShelterDetailActivity.class);
+                intent.putExtra("SHELTER", closestShelter);
+                intent.putExtra("CANRESERVE", uniqueKeyOfReservedBeds == -1);
+                startActivityForResult(intent, 0);
                 return true;
         }
         return false;
@@ -176,9 +224,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             uniqueKeyOfReservedBeds = -1;
             reservedBeds = 0;
             Context context = getApplicationContext();
-            Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds",
+            storage.saveInt("uniqueKeyOfReservedBeds",
                                                     uniqueKeyOfReservedBeds);
-            Storage.getInstance(context).saveInt("reservedBeds", reservedBeds);
+            storage.saveInt("reservedBeds", reservedBeds);
             saveShelters();
         }
     }
@@ -191,8 +239,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             shelter.setVacancy(shelter.getVacancy() - reservedBeds);
         }
         Context context = getApplicationContext();
-        Storage.getInstance(context).saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
-        Storage.getInstance(context).saveInt("reservedBeds", reservedBeds);
+        storage.saveInt("uniqueKeyOfReservedBeds", uniqueKeyOfReservedBeds);
+        storage.saveInt("reservedBeds", reservedBeds);
         saveShelters();
     }
 
@@ -203,7 +251,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             shelterSet.add(shelter.toEntry());
         }
         Context context = getApplicationContext();
-        Storage.getInstance(context).saveStringSet("shelters", shelterSet);
+        storage.saveStringSet("shelters", shelterSet);
     }
 
     private void populateArrayListFromCSV() {
@@ -230,6 +278,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for(String shelterStorageEntry : shelterStorageEntries) {
             Shelter shelter = Shelter.createFromStorageEntry(shelterStorageEntry);
             shelters.put(shelter.getUniqueKey(), shelter);
+        }
+    }
+
+    private static float distance(LatLng ll1, LatLng ll2) {
+        float[] result = new float[3];
+        Location.distanceBetween(ll1.latitude, ll1.longitude, ll2.latitude, ll2.longitude, result);
+        return result[0];
+    }
+
+    // Helper classes
+
+    private class MarkerClickListener implements GoogleMap.OnMarkerClickListener {
+
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            Shelter shelter = shelters.get(markersToKeys.get(marker));
+            Intent intent = new Intent(MapsActivity.this, ShelterDetailActivity.class);
+            intent.putExtra("SHELTER", shelter);
+            intent.putExtra("CANRESERVE", uniqueKeyOfReservedBeds == -1);
+            startActivityForResult(intent, 0);
+            return true;
         }
     }
 }
